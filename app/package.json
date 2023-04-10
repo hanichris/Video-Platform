@@ -7,12 +7,12 @@
     "test": "test"
   },
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
-    "build": "npm run build:types && npm run build:js",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "./node_modules/.bin/eslint",
+    "check-lint": "lint [0-9]*.js",
+    "start-server": "nodemon --exec babel-node --presets @babel/preset-env ./server.js",
+    "start-worker": "nodemon --exec babel-node --presets @babel/preset-env ./worker.js",
+    "dev": "nodemon --exec babel-node --presets @babel/preset-env",
+    "test": "./node_modules/.bin/mocha --require @babel/register --exit"
   },
   "keywords": [],
   "author": "",
@@ -29,22 +29,18 @@
     "image-thumbnail": "^1.0.15"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-export-default-from": "^7.18.10",
     "@babel/preset-env": "^7.21.4",
-    "@babel/preset-typescript": "^7.21.4",
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.4",
     "@babel/node": "^7.20.7",
+    "@babel/register": "^7.21.0",
     "mocha": "^10.2.0",
     "chai": "^4.3.7",
     "chai-http": "^4.3.0",
     "eslint": "^8.38.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.22",
-    "typescript": "^5.0.4",
-    "ts-node": "^10.9.1",
-    "@typescript-eslint/eslint-plugin": "^5.57.1",
-    "@typescript-eslint/parser": "^5.57.1",
-    "@types/node": "^18.15.11",
-    "@types/express": "^4.17.17"
+    "sinon": "^15.0.3"
   }
 }
