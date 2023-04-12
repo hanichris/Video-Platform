@@ -32,7 +32,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Merge Pull Request
         if: ${{ steps.cpr.outputs.pull-request-number != null }}
-        uses: chalo1996/create-pull-request@v3
+        uses: chalo1996/Video-Platform/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Automated Merge
