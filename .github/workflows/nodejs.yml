@@ -20,22 +20,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install Dependencies
         run: npm ci
-      - name: Create Pull Request
-        id: cpr
-        uses: Chalo1996/Video-Platform@main
-        with:
-          commit-message: Automated Pull Request
-          title: Automated Pull Request
-          branch: automated-pull-request
-          body: This pull request was automatically created by a Git Action.
-          base: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Merge Pull Request
-        if: ${{ steps.cpr.outputs.pull-request-number != null }}
-        uses: Chalo1996/Video-Platform@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Automated Merge
-          merge-method: merge
-          delete-branch: false
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+      - name: Create Pull
