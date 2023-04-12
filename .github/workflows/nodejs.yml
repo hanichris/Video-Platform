@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - chalo
-      - master
 
 jobs:
   create-pull-request-and-merge:
@@ -24,7 +22,7 @@ jobs:
         run: npm ci
       - name: Create Pull Request
         id: cpr
-        uses: Chalo1996/Video-Platform@v1
+        uses: Chalo1996/Video-Platform
         with:
           commit-message: Automated Pull Request
           title: Automated Pull Request
@@ -34,10 +32,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Merge Pull Request
         if: ${{ steps.cpr.outputs.pull-request-number != null }}
-        uses: Chalo1996/Video-Platform@v1
+        uses: Chalo1996/Video-Platform
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Automated Merge
           merge-method: merge
-          delete-branch: false
+          delete-branch: true
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
