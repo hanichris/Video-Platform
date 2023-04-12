@@ -1,2 +1,6 @@
 # configuration file
 .config
+node_modules
+usersAndDbStatus.sh
+restart-services.sh
+*.png
