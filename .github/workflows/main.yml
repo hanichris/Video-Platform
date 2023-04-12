@@ -31,7 +31,7 @@ jobs:
         run: npm test
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v3.10.2
+        uses: Chalo1996/Video-Platform@main
         with:
           commit-message: "Automated PR"
           title: "Automated PR"
