@@ -3,6 +3,7 @@ name: Create Pull Request and Merge
 on:
   push:
     branches:
+      - master
       - main
 
 jobs:
