@@ -1,0 +1,54 @@
+name: Create Pull Request and Merge
+
+inputs:
+  commit-message:
+    required: true
+  title:
+    required: true
+  branch:
+    required: true
+  body:
+    required: false
+  base:
+    required: true
+  token:
+    required: true
+  merge-method:
+    required: true
+  delete-branch:
+    required: true
+  pull-request-number:
+    required: false
+
+outputs:
+  pull-request-number:
+    description: The number of the created pull request
+
+runs:
+  using: "docker"
+  image: DockerHubUsername/Ubuntu-Node-18-LTS:latest
+  entrypoint: /bin/sh -c
+  command: |
+    git checkout ${{ inputs.base }}
+    git pull
+    git checkout -b ${{ inputs.branch }}
+    git add .
+    git commit -m "${{ inputs.commit-message }}"
+    git push --set-upstream origin ${{ inputs.branch }}
+    pr=`curl -s -X POST \
+          -H "Authorization: Bearer ${{ inputs.token }}" \
+          -d '{"title":"'"${{ inputs.title }}""'","body":"'"${{ inputs.body }}""'","head":"'"${{ inputs.branch }}""'","base":"'"${{ inputs.base }}""'"}' \
+          https://api.github.com/repos/hanichris/Video-Platform/pulls | jq .number`
+    echo ::set-output name=pull-request-number::$pr
+    if [[ $pr != null ]] && [[ "${{ inputs.merge-method }}" != "none" ]]; then
+      echo "Merging Pull Request..."
+      merge_method=${{ inputs.merge-method }}
+      if [ "${{ inputs.delete-branch }}" = "true" ]; then
+        merge_method="${{ inputs.merge-method }}-squash"
+      fi
+      curl -s -X PUT \
+        -H "Authorization: Bearer ${{ inputs.token }}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        -d '{"commit_title":"'"${{ inputs.commit-message }}""'","merge_method":"'"${merge_method}""'"}' \
+        https://api.github.com/repos/hanichris/Video-Platform/pulls/${{ inputs.pull-request-number }}/merge
+    fi
