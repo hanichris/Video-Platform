@@ -37,5 +37,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Automated Merge
           merge-method: merge
-          delete-branch: true
+          delete-branch: false
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
