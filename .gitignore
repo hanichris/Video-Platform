@@ -1,0 +1,6 @@
+#Configuration files
+.env
+.config
+
+#commands file
+commands
