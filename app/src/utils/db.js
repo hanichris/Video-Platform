@@ -12,11 +12,18 @@ class DBClient {
         deprecationErrors: true,
       }
     });
-    this.client.connect()
-
+    this.client.connect().then(() => {
+      this.client.db("admin").command({ ping: 1 });
+      console.log('MongoDB client connected to server');
+    }).catch((err) => console.error(`Mongodb client not connected to the database: ${err}`));
   }
+
+  async getUser(userObject) {}
+  async createUser(userDetails) {}
+  async getVideo() {}
+  async uploadVideo() {}
 }
 
 const dbClient = new DBClient();
-console.log(dbClient.uri);
+console.log(dbClient.db);
 module.exports = dbClient;
