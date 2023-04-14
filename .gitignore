@@ -4,3 +4,9 @@
 
 #commands file
 commands
+
+#folders
+node_modules
+
+#package-lock.json file
+package-lock.json
