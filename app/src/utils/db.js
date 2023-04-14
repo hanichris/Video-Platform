@@ -25,5 +25,4 @@ class DBClient {
 }
 
 const dbClient = new DBClient();
-console.log(dbClient.db);
 module.exports = dbClient;
