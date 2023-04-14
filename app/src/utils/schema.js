@@ -1,4 +1,4 @@
-const usersSchema = {
+export default {
   bsonType: 'object',
   title: 'User Object Validation',
   required: ['name', 'email', 'password'],
@@ -17,8 +17,6 @@ const usersSchema = {
     },
   },
 };
-
-module.exports = usersSchema;
 
 // name of video. description, likes (count), comments,
 // Likes: +1, -1
