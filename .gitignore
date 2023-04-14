@@ -1,6 +1,10 @@
+#Gitignore
+.gitignore
+
 #Configuration files
 .env
 .config
 
 #commands file
 commands
+node_modules
