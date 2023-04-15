@@ -18,6 +18,29 @@ export default {
   },
 };
 
+export const filesSchema = {
+  bsonType: 'object',
+  title: 'Files Object Validation',
+  required: ['filepath', 'video_description', 'title', 'userId'],
+  properties: {
+    userId: {
+      bsonType: 'objectId',
+      description: "Must provide the 'userId' associated with the file",
+    },
+    title: {
+      bsonType: 'string',
+      description: "'title' must be a string and is required",
+    },
+    video_description: {
+      bsonType: 'string',
+      description: 'The video description is a required string',
+    },
+    filepath: {
+      bsonType: 'string',
+      description: 'The path to the video file is required',
+    },
+  },
+};
 // name of video. description, likes (count), comments,
 // Likes: +1, -1
 // DB: sum(previous, receivedFlag)
