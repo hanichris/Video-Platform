@@ -84,9 +84,19 @@ class DBClient {
     return video;
   }
 
-  // async deleteUser() {}
+  async deleteUser(filter) {
+    const result = await this.db.collection(
+      process.env.USERS_COLLECTION_NAME,
+    ).deleteOne(filter);
+    return result.deletedCount;
+  }
 
-  // async deleteVidoe() {}
+  async deleteVideo(filter) {
+    const result = await this.db.collection(
+      process.env.FILES_COLLECTION_NAME,
+    ).deleteOne(filter);
+    return result.deletedCount;
+  }
 }
 
 export default new DBClient();
