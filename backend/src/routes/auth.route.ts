@@ -8,7 +8,7 @@ import {
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requireUser } from "../middleware/requireUser";
 import { validate } from "../middleware/validate";
-import { registerUserModel, loginUserModel } from "../models/user.model";
+import { registerUserModel, loginUserModel } from "../services/user.service";
 
 const router = express.Router();
 
@@ -22,6 +22,6 @@ router.post("/login", validate(loginUserModel), loginHandler);
 router.get("/logout", deserializeUser, requireUser, logoutHandler);
 
 // Reset user password route
-router.get("/reset-password", deserializeUser, resetPasswordHandler);
+router.post("/reset-password", deserializeUser, resetPasswordHandler);
 
 export default router;
