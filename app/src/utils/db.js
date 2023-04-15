@@ -1,6 +1,7 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import * as dotenv from 'dotenv';
 import usersSchema from './schema.js';//eslint-disable-line
+import { filesSchema } from './schema.js'; //eslint-disable-line
 
 class DBClient {
   constructor() {
@@ -15,12 +16,21 @@ class DBClient {
     this.client.connect().then(async () => {
       console.log('MongoDB client connected to server');
       this.db = this.client.db(process.env.DB_NAME);
+
       try {
         await this.db.createCollection(process.env.USERS_COLLECTION_NAME, {
           validator: { $jsonSchema: usersSchema },
         });
       } catch (e) {
         console.error(`Collection ${process.env.DB_NAME}.${process.env.USERS_COLLECTION_NAME} already Exists`);
+      }
+
+      try {
+        await this.db.createCollection(process.env.FILES_COLLECTION_NAME, {
+          validator: { $jsonSchema: filesSchema },
+        });
+      } catch (e) {
+        console.error(`Collection ${process.env.DB_NAME}.${process.env.FILES_COLLECTION_NAME} already Exists`);
       }
     }).catch((err) => console.error(`Mongodb client not connected to the database: ${err}`));
   }
@@ -32,14 +42,42 @@ class DBClient {
     return userCount;
   }
 
-  async createUser(newUser) {
+  async createUser(newUserDocument) {
     const result = await this.db.collection(
       process.env.USERS_COLLECTION_NAME,
-    ).insertOne(newUser);
+    ).insertOne(newUserDocument);
     return result.insertedId;
   }
 
-  // async getUser(userObject) {}
+  async uploadVideo(newVideoDocument) {
+    const result = await this.db.collection(
+      process.env.FILES_COLLECTION_NAME,
+    ).insertOne(newVideoDocument);
+    return result.insertedId;
+  }
+
+  async getUser(userDocument) {
+    const user = await this.db.collection(
+      process.env.USERS_COLLECTION_NAME,
+    ).findOne(userDocument);
+    return user;
+  }
+
+  async getVideo(videoDocument) {
+    const video = await this.db.collection(
+      process.env.FILES_COLLECTION_NAME,
+    ).findOne(videoDocument);
+    return video;
+  }
+
+  // async updateUser(filter, update) {}
+
+  // async updateVideo(filter, update) {}
+
+  // async deleteUser() {}
+
+  // async deleteVidoe() {}
+
   // async getVideo() {}
   // async uploadVideo() {}
 }
