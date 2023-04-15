@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { exclude } from "../controllers/AuthController";
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
-import sha1 from 'sha1';
+import User from '../models/user.model'
 
 export const deserializeUser = async (
   req: Request,
@@ -17,13 +17,12 @@ export const deserializeUser = async (
       req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
-    } else if (req.cookies.token) {
-      token = req.cookies.token;
+    } else if (req.cookies.auth_token) {
+      token = req.cookies.auth_token;
     }
 
     if (!token) {
       return res.status(401).json({
-        status: "fail",
         message: "You are not logged in",
       });
     }
@@ -33,19 +32,10 @@ export const deserializeUser = async (
 
     if (!decodedCredentials) {
       return res.status(401).json({
-        status: "fail",
         message: "Invalid token or user doesn't exist",
       });
     }
-
-    const user = await dbClient.getUser(
-      { email: String(decodedCredentials.sub),
-        password: sha1(userPwd) }
-    );
-
-    // const user = await prisma.user.findUnique({
-    //   where: { id: String(decodedCredentials.sub) },
-    // });
+    const user: any = await User.findById(decodedCredentials.sub);
 
     if (!user) {
       return res.status(401).json({
@@ -54,9 +44,7 @@ export const deserializeUser = async (
       });
     }
 
-    res.locals.user = exclude(user, ["password"]);
-    
-
+    res.locals.user = exclude(user, ["password", "history", "subscriptions"]);
     next();
   } catch (err: any) {
     next(err);

@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { CreateUserInput, LoginUserInput } from "../models/user.model";
+import { NextFunction, Request, Response, response } from "express";
+import { CreateUserInput, LoginUserInput } from "../services/user.service";
 import {
   getGoogleOauthToken,
   getGoogleUser,
@@ -7,6 +7,9 @@ import {
 import jwt from "jsonwebtoken";
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+import User from "../models/user.model"
+import bcrypt from "bcryptjs";
+import createError from "../error";
 
 export function exclude<User, Key extends keyof User>(
   user: User,
@@ -20,20 +23,25 @@ export function exclude<User, Key extends keyof User>(
 
 export const registerHandler = async (
   req: Request<{}, {}, CreateUserInput>,
-  res: Response,
+  resp: Response,
   next: NextFunction
 ) => {
   try {
-    const user = await prisma.user.create({
-      data: {
-        name: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        createdAt: new Date(),
-      },
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(req.body.password, salt);
+    const user = new User({
+        ...req.body,
+        password: hash,
     });
-    await redisClient.set(key, user._id.toString(), 86400);
-    res.status(201).json({
+    await user.save();
+    const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
+    const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
+    const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
+    resp.cookie("auth_token", token, {
+      expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
+    });
+    // await redisClient.set(`auth_${token}`, user.id., TOKEN_EXPIRES_IN * 60 * 1000);
+    resp.status(201).json({
       status: "success",
       data: {
         user: exclude(user, ["password"]),
@@ -41,7 +49,7 @@ export const registerHandler = async (
     });
   } catch (err: any) {
     if (err.code === "P2002") {
-      return res.status(409).json({
+      return resp.status(409).json({
         status: "fail",
         message: "Email already exist",
       });
@@ -52,40 +60,35 @@ export const registerHandler = async (
 
 export const loginHandler = async (
   req: Request<{}, {}, LoginUserInput>,
-  res: Response,
+  resp: Response,
   next: NextFunction
 ) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: req.body.email },
-    });
+    const user = await User.findOne({ email: req.body.email });
 
-    if (!user) {
-      return res.status(401).json({
+    if (!user) return next(createError(404, "User not found!"));
+
+    if (user.fromGoogle) {
+      return resp.status(401).json({
         status: "fail",
-        message: "Invalid email or password",
+        message: `Use Google OAuth2 instead`,
       });
     }
+    
+    const isCorrect = await bcrypt.compare(req.body.password, user.password);
 
-    if (user.provider === "Google") {
-      return res.status(401).json({
-        status: "fail",
-        message: `Use ${user.provider} OAuth2 instead`,
-      });
-    }
+    if (!isCorrect) return next(createError(400, "Wrong Credentials!"));
 
     const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
     const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
-    const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
-      expiresIn: `${TOKEN_EXPIRES_IN}m`,
-    });
+    const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
 
-    res.cookie("token", token, {
+    resp.cookie("auth_token", token, {
       expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
     });
 
-    await redisClient.set(key, user._id.toString(), 86400);
-    res.status(200).json({
+    // await redisClient.set(`auth_${token}`, user.id., TOKEN_EXPIRES_IN * 60 * 1000);
+    resp.status(200).json({
       status: "success",
     });
   } catch (err: any) {
@@ -99,7 +102,7 @@ export const logoutHandler = async (
   next: NextFunction
 ) => {
   try {
-    res.cookie("token", "", { maxAge: -1 });
+    res.cookie("auth_token", "", { maxAge: -1 });
     res.status(200).json({ status: "success" });
   } catch (err: any) {
     next(err);
@@ -112,9 +115,7 @@ export const resetPasswordHandler = async (
   next: NextFunction
 ) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: req.body.email },
-    });
+    const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
       return res.status(401).json({
@@ -123,20 +124,22 @@ export const resetPasswordHandler = async (
       });
     }
 
-    if (user.provider === "Google") {
+    if (user.fromGoogle) {
       return res.status(401).json({
         status: "fail",
-        message: `Use ${user.provider} OAuth2 instead`,
+        message: `Use Google OAuth2 instead`,
       });
     }
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(req.body.password, salt);
+    user.password = hash;
+    user.save();
 
     const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
     const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
-    const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
-      expiresIn: `${TOKEN_EXPIRES_IN}m`,
-    });
+    const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
 
-    res.cookie("token", token, {
+    res.cookie("auth_token", token, {
       expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
     });
 
@@ -176,19 +179,21 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
       });
     }
 
-    const user = await prisma.user.upsert({
-      where: { email },
-      create: {
+    const user = await User.findOneAndUpdate({ email },
+      {
         createdAt: new Date(),
-        name,
+        username: email,
         email,
-        photo: picture,
+        avatar: picture,
         password: "",
         verified: true,
-        provider: "Google",
+        fromGoogle: true,
       },
-      update: { name, email, photo: picture, provider: "Google" },
-    });
+      {
+        new: true,
+        upsert: true
+      }
+    );
 
     if (!user) return res.redirect(`${FRONTEND_ENDPOINT}/oauth/error`);
 
@@ -198,7 +203,7 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
       expiresIn: `${TOKEN_EXPIRES_IN}m`,
     });
 
-    res.cookie("token", token, {
+    res.cookie("auth_token", token, {
       expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
     });
 
