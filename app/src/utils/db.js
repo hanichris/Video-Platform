@@ -70,16 +70,23 @@ class DBClient {
     return video;
   }
 
-  // async updateUser(filter, update) {}
+  async updateUser(filter, updatedUser) {
+    const user = await this.db.collection(
+      process.env.USERS_COLLECTION_NAME,
+    ).findOneAndUpdate(filter, { $set: updatedUser }, { returnDocument: 'after' });
+    return user;
+  }
 
-  // async updateVideo(filter, update) {}
+  async updateVideo(filter, updatedVideo) {
+    const video = await this.db.collection(
+      process.env.FILES_COLLECTION_NAME,
+    ).findOneAndUpdate(filter, { $set: updatedVideo }, { returnDocument: 'after' });
+    return video;
+  }
 
   // async deleteUser() {}
 
   // async deleteVidoe() {}
-
-  // async getVideo() {}
-  // async uploadVideo() {}
 }
 
 export default new DBClient();
