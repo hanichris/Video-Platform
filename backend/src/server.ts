@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.route";
 import authRouter from "./routes/auth.route";
 import sessionRouter from "./routes/session.route";
+import commentRouter from "./routes/comment.route";
+import channelRouter from "./routes/channel.route";
 import videoRouter from "./routes/video.route";
 import dbClient from './utils/db';
 import AppController from "./controllers/AppController";
@@ -29,7 +31,10 @@ app.use(
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/sessions", sessionRouter);
+app.use("/api/v1/channels", channelRouter);
 app.use("/api/v1/videos", videoRouter);
+app.use("/api/v1/comments", commentRouter);
+
 
 // GET /status.
 app.get('/status', AppController.getStatus); 
@@ -38,7 +43,7 @@ app.get('/status', AppController.getStatus);
 app.get('/stats', AppController.getStats); 
 
 // Get health status
-app.get("/healthchecker", (req: Request, res: Response) => {
+app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
     message: "100% online",
@@ -65,5 +70,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 const port = 8000;
 app.listen(port, () => {
+  dbClient.connect();
   console.log(`✅ Server started on port: ${port}`);
 });
