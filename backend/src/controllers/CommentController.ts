@@ -5,7 +5,12 @@ import createError from "../error";
 
 class CommentController {
   static async createComment(req: Request, resp: Response, next: NextFunction) {
-    const newComment = new Comment({ ...req.body, userId: resp.locals.user.id });
+    const userId = String(resp.locals.user._id)
+    const newComment = new Comment({ 
+      ...req.body,
+      userId: userId,
+      videoId: req.params.videoId  
+    });
     try {
       const savedComment = await newComment.save();
       resp.status(200).send(savedComment);
@@ -16,9 +21,10 @@ class CommentController {
 
   static async updateComment(req: Request, resp: Response, next: NextFunction) {
     try {
+      const userId = String(resp.locals.user._id)
       const comment = await Comment.findById(req.params.id);
       const video = await Video.findById(comment?.videoId);
-      if (resp.locals.user.id === comment?.userId || resp.locals.user.id === video?.userId) {
+      if (userId === comment?.userId || userId === video?.userId) {
         const updatedComment = await Comment.findByIdAndUpdate(
           req.params.id,
           {
@@ -37,9 +43,10 @@ class CommentController {
 
   static async deleteComment(req: Request, resp: Response, next: NextFunction) {
     try {
+      const userId = String(resp.locals.user._id)
       const comment = await Comment.findById(req.params.id);
       const video = await Video.findById(req.params.id);
-      if (resp.locals.user.id === comment?.userId || resp.locals.user.id === video?.userId) {
+      if (userId === comment?.userId || userId === video?.userId) {
         await Comment.findByIdAndDelete(req.params.id);
         resp.status(204).json("The comment has been deleted.");
       } else {

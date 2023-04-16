@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { exclude } from "../controllers/AuthController";
-import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
 import User from '../models/user.model'
 
-export const deserializeUser = async (
+// Get token from request header or from cookie to authenticate user
+export const getAuthToken = async (
   req: Request,
   res: Response,
   next: NextFunction

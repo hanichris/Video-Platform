@@ -5,6 +5,46 @@ import { ChannelModel as Channel } from "../models/channel.model";
 import createError from '../error';
 
 class ChannelController {
+  static async createChannel(req: Request, resp: Response, next: NextFunction) {
+    const userId = String(resp.locals.user._id)
+    const user = await User.findById(userId)
+    if (!user) {
+      return resp.status(401).json({ error: 'User not found' });
+    }
+    try {
+      const channel = new Channel({
+        "name": req.body.channelName || user.username,
+        "userId": userId,
+        ...req.body
+      });
+      if (!channel) {
+        return next(createError(404, "Channel could not be created!"));
+      }
+      await channel.save()
+      resp.status(200).json(channel);
+    } catch (err) {
+      next(err);
+    }
+  };
+  
+  static async deleteChannel(req: Request, resp: Response, next: NextFunction) {
+    const userId = String(resp.locals.user._id)
+    const channel = await Channel.findById(req.params.id)
+    if (!channel) {
+      return resp.status(401).json({ error: 'Channel not found' });
+    }
+    if (channel.userId === userId) {
+      try {
+        await Channel.findByIdAndDelete(req.params.id);
+        resp.status(200).json("Channel has been deleted.");
+      } catch (err) {
+        next(err);
+      }
+    } else {
+      return next(createError(403, "You can only delete your channel!"));
+    }
+  };
+
   static async uploadVideo(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id);
     if (!userId) {
@@ -18,12 +58,18 @@ class ChannelController {
     if (!title) {
       return resp.status(400).json({ error: 'Missing title' });
     }
+    const channel = await Channel.findById(req.params.id);
+    if (!channel) {
+      return resp.status(401).json({ error: 'Channel not found' });
+    }
     const newVideo = new Video({ 
       userId: userId,
-      channelId: req.params.id,
+      channelId: channel.id,
       ...req.body });
     try {
       const savedVideo = await newVideo.save();
+      channel.videos.push(savedVideo.id)
+      channel.save();
       resp.status(201).json(savedVideo);
     } catch (err) {
       next(err);
@@ -53,6 +99,21 @@ class ChannelController {
       next(err);
     }
   };
+
+  static async search(req: Request, resp: Response, next: NextFunction){
+    const query = req.query.q;
+    console.log(query)
+    try {
+      const channels = await Channel.find({
+        name: { $regex: query, $options: "i" },
+      }).limit(20);
+      if (!channels) return next(createError(404, "Channels not found!"));
+      resp.status(200).json(channels);
+    } catch (err) {
+      next(err);
+    }
+  };
+
 }
 
 export default ChannelController;

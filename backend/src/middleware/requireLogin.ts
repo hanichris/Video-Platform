@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-export const requireUser = (
+// Read from the local response object to get the stored user json data
+// for endpoints that require a logged in user
+export const requireLogin = (
   req: Request,
   resp: Response,
   next: NextFunction

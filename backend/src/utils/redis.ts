@@ -21,21 +21,21 @@ const retryStrategy = function(options: any) {
   }
 
 class RedisClient {
-    client: any;
+    _client: RedisClientType;
     connected: boolean = false;
     constructor() {
         dotenv.config();
-        this.client = createClient();
+        this._client = createClient();
         (async () => {
-            await this.client.connect();
-            if (this.client.isOpen) {
+            await this._client.connect();
+            if (this._client.isOpen) {
                 this.connected = true;
             }
-            this.client.on('connect', () => console.log("🚀 Redis Database connected successfully"));
-            this.client.on('ready', () => console.log('Redis is ready'));
-            this.client.on('reconnecting', () => console.log('Redis is reconnecting'));
-            this.client.on('error', () => console.log('Redis error'));
-            this.client.on('end', () => console.log('Redis end'));
+            this._client.on('connect', () => console.log("🚀 Redis Database connected successfully"));
+            this._client.on('ready', () => console.log('Redis is ready'));
+            this._client.on('reconnecting', () => console.log('Redis is reconnecting'));
+            this._client.on('error', () => console.log('Redis error'));
+            this._client.on('end', () => console.log('Redis end'));
         }
         )();
     }
@@ -44,8 +44,8 @@ class RedisClient {
         return this.connected;
     }
 
-    db() {
-      return <RedisClientType>this.client;
+    get client() {
+      return <RedisClientType>this._client;
     }
 }
 const redisClient = new RedisClient();

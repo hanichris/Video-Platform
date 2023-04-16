@@ -3,6 +3,7 @@ import User from "../models/user.model";
 import Video from "../models/video.model";
 import { ChannelModel as Channel } from "../models/channel.model";
 import createError from "../error";
+import { exclude } from "./AuthController";
 
 class UserController {
   static async getMeHandler(
@@ -11,7 +12,7 @@ class UserController {
     next: NextFunction
   ) {
     try {
-      const user = res.locals.user;
+      const user = exclude(res.locals.user, ["password"]);
       res.status(200).json({
         status: "success",
         data: {
@@ -25,6 +26,7 @@ class UserController {
 
   static async updateUser(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id)
+    console.log(userId)
     if (req.params.id === userId) {
       try {
         const updatedUser = await User.findByIdAndUpdate(
@@ -136,7 +138,7 @@ class UserController {
   
       const list = await Promise.all(
         subscribedChannels.map(async (channelId: any) => {
-          return await Video.find({ userId: channelId });
+          return await Channel.findById(channelId);
         })
       );
       if (!list) return next(createError(404, "Channels not found!"));

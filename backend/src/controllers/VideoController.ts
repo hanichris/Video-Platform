@@ -18,7 +18,7 @@ class VideoController {
     const updatedVideo = await Video.findByIdAndUpdate(
       req.params.id,
       {
-        $set: { isPublic: true, updatedAt: new Date() },
+        $set: { isPublic: true},
       },
       { new: true }
     );
@@ -41,7 +41,7 @@ class VideoController {
     const updatedVideo = await Video.findByIdAndUpdate(
       req.params.id,
       {
-        $set: { isPublic: false, updatedAt: new Date() }
+        $set: { isPublic: false }
       },
       { new: true }
     );
@@ -53,18 +53,12 @@ class VideoController {
 
   static async downloadVideo(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id)
-    const video = await Video.findById(req.params.id);
-    if (!video) {
-      console.error('Video was not found!!!');
+    const video: any = await Video.findById(req.params.id);
+    if (!video || !video.isPublic|| !video.name || !video.videoUrl) {
       return resp.status(404).json({ error: 'Video not found' });
     }
-    if ((!video.isPublic && !userId) || (!video.isPublic && video.userId.toString() !== userId)) {
-      return resp.status(404).json({ error: 'Video not found' });
-    }
-
-    if (!video.name || !video.videoUrl) return next(createError(404, "Video not found!"));
-    let content = mime.contentType(video.name);
-    return resp.header('Content-Type', String(content)).status(200).sendFile(video.videoUrl);
+    let contentType = mime.contentType(video.name) ? ".mp4" in video.name : `${video.name}.mp4`;
+    return resp.header('Content-Type', String(contentType)).status(200).json(video)
   }
   
   static async updateVideo(req: Request, resp: Response, next: NextFunction) {
@@ -76,13 +70,13 @@ class VideoController {
         const updatedVideo = await Video.findByIdAndUpdate(
           req.params.id,
           {
-            $set: {...req.body, updatedAt: new Date()}
+            $set: {...req.body}
           },
           { new: true }
         );
         resp.status(200).json(updatedVideo);
       } else {
-        return next(createError(403, "You can update only your video!"));
+        return next(createError(403, "You can only update your video!"));
       }
     } catch (err) {
       next(err);
