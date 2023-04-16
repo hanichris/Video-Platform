@@ -4,7 +4,17 @@ import AuthController from '../controllers/AuthController';
 import FilesController from '../controllers/FilesController';
 import UsersController from '../controllers/UsersController';
 
+// Video Streaming API
+import StreamingController from '../controllers/StreamingController';
+import UploadController from '../controllers/UploadController';
+import DownloadController from '../controllers/DownloadController';
+
 const router = Router();
+
+// Video Streaming API
+router.post( '/upload', UploadController.postUpload ); // POST /upload
+router.get( '/download/:id', DownloadController.getDownload ); // GET /download/:id
+router.get( '/stream/:id', StreamingController.getStream ); // GET /stream/:id
 
 router.get('/status', AppController.getStatus); // GET /status.
 router.get('/stats', AppController.getStats); // GET /stats.
