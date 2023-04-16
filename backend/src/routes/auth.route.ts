@@ -1,27 +1,22 @@
 import express from "express";
-import {
-  loginHandler,
-  logoutHandler,
-  registerHandler,
-  resetPasswordHandler
-} from "../controllers/AuthController";
-import { deserializeUser } from "../middleware/deserializeUser";
-import { requireUser } from "../middleware/requireUser";
+import { AuthController } from "../controllers/AuthController";
+import { requireLogin } from "../middleware/requireLogin";
+import { getAuthToken } from "../middleware/getAuthToken";
 import { validate } from "../middleware/validate";
-import { registerUserModel, loginUserModel } from "../services/user.service";
+import { registerUserModel, loginUserModel, resetPasswordModel } from "../services/user.service";
 
 const router = express.Router();
 
 // Register user route
-router.post("/register", validate(registerUserModel), registerHandler);
+router.post("/register", validate(registerUserModel), AuthController.registerHandler); // POST /auth/register
 
 // Login user route
-router.post("/login", validate(loginUserModel), loginHandler);
+router.post("/login", validate(loginUserModel), AuthController.loginHandler); // POST /auth/login
 
 // Logout user route
-router.get("/logout", deserializeUser, requireUser, logoutHandler);
+router.get("/logout", getAuthToken, requireLogin, AuthController.logoutHandler); // GET /auth/logout
 
 // Reset user password route
-router.post("/reset-password", deserializeUser, resetPasswordHandler);
+router.post("/reset-password", validate(resetPasswordModel), AuthController.resetPasswordHandler); // POST /auth/reset-password
 
 export default router;

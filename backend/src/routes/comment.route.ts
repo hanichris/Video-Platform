@@ -1,16 +1,16 @@
 import express from "express";
 import CommentController from "../controllers/CommentController";
-import { deserializeUser } from "../middleware/deserializeUser";
-import { requireUser } from "../middleware/requireUser";
+import { getAuthToken } from "../middleware/getAuthToken";
+import { requireLogin } from "../middleware/requireLogin";
 
 const router = express.Router();
 
-router.use(deserializeUser, requireUser);
+router.use(getAuthToken, requireLogin);
 
 // Comments route
-router.post("/", deserializeUser, CommentController.createComment) // POST /comments/
-router.put("/:id", deserializeUser, CommentController.updateComment) // PUT /comments/:id
-router.delete("/:id", deserializeUser, CommentController.deleteComment) // DELETE /comments/:id
+router.put("/:id", getAuthToken, requireLogin, CommentController.updateComment) // PUT /comments/:id
+router.delete("/:id", getAuthToken, requireLogin, CommentController.deleteComment) // DELETE /comments/:id
 router.get("/:videoId", CommentController.getComments) // GET /comments/:videoId
+router.post("/:videoId", getAuthToken, requireLogin, CommentController.createComment) // POST /comments/
 
 export default router;

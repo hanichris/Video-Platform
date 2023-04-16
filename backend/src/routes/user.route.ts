@@ -1,40 +1,40 @@
 import express from "express";
 import UserController from "../controllers/UserController";
-import { deserializeUser } from "../middleware/deserializeUser";
-import { requireUser } from "../middleware/requireUser";
+import { getAuthToken } from "../middleware/getAuthToken";
+import { requireLogin } from "../middleware/requireLogin";
 
 const router = express.Router();
 
-router.use(deserializeUser, requireUser);
+router.use(getAuthToken, requireLogin);
 
-// Get my info route
-router.get("/me", UserController.getMeHandler); // GET /users/me
-
-//update user
-router.put("/:id", deserializeUser, UserController.updateUser); // PUT /users/:id
-
-//delete user
-router.delete("/:id", deserializeUser, UserController.deleteUser); // DELETE /users/:id
+// Get my profile route
+router.get("/me", getAuthToken, requireLogin, UserController.getMeHandler); // GET /users/me
 
 //get a user
 router.get("/:id", UserController.getUser); // GET /users/:id
 
-//subscribe a user
-router.put("/subscribe/:channelId", deserializeUser, UserController.subscribe); // PUT /users/subscribe/:channelId
+//update user
+router.put("/:id", getAuthToken, requireLogin, UserController.updateUser); // PUT /users/:id
 
-//unsubscribe a user
-router.put("/unsubscribe/:channelId", deserializeUser, UserController.unsubscribe); // PUT /users/unsubscribe/:channelId
+//delete user
+router.delete("/:id", getAuthToken, requireLogin, UserController.deleteUser); // DELETE /users/:id
+
+//subscribe a user channel
+router.put("/subscribe/:channelId", getAuthToken, requireLogin, UserController.subscribe); // PUT /users/subscribe/:channelId
+
+//unsubscribe a user channel
+router.put("/unsubscribe/:channelId", getAuthToken, requireLogin, UserController.unsubscribe); // PUT /users/unsubscribe/:channelId
 
 //like a video
-router.put("/like/:videoId", deserializeUser, UserController.like); // PUT /users/like/:videoId
+router.put("/like/:videoId", getAuthToken, requireLogin, UserController.like); // PUT /users/like/:videoId
 
 //dislike a video
-router.put("/dislike/:videoId", deserializeUser, UserController.dislike); // PUT /users/dislike/:videoId
+router.put("/dislike/:videoId", getAuthToken, requireLogin, UserController.dislike); // PUT /users/dislike/:videoId
 
 // Get user subscriptions
-router.get('/subscriptions', deserializeUser, UserController.getSubscriptions); // GET /subscriptions
+router.get('/:id/subscriptions', getAuthToken, requireLogin, UserController.getSubscriptions); // GET /users/:id/subscriptions
 
 // Get user watched views history
-router.get('/history', deserializeUser, UserController.getHistory); // GET /history
+router.get('/:id/history', getAuthToken, requireLogin, UserController.getHistory); // GET /users/:id/history
 
 export default router;
