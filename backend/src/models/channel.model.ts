@@ -3,16 +3,18 @@ import mongoose from "mongoose";
 // Channel model
 const ChannelSchema = new mongoose.Schema(
   {
+    userId: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
     },
     description: {
       type: String,
-      required: true,
     },
     imgUrl: {
       type: String,
-      required: true,
     },
     views: {
       type: Number,
