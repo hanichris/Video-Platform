@@ -1,3 +1,6 @@
+#Gitignore
+.gitignore
+
 #Configuration files
 .env
 .config
