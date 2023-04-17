@@ -5,3 +5,6 @@
 #commands file
 commands
 node_modules
+
+#lock file
+package-lock.json
