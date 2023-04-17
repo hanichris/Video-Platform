@@ -4,7 +4,9 @@
 
 #commands file
 commands
+
+#folders
 node_modules
 
-#lock file
+#package-lock.json file
 package-lock.json
