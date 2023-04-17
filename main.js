@@ -1,4 +1,4 @@
-import dbClient from './app/src/utils/db.js'; //eslint-disable-line
+import dbClient from './backend/src/utils/db.js'; //eslint-disable-line
 
 async function listDatabases() {
   const databasesList = await dbClient.client.db().admin().listDatabases();
