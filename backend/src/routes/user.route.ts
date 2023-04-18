@@ -5,7 +5,7 @@ import { requireLogin } from "../middleware/requireLogin";
 
 const router = express.Router();
 
-router.use(getAuthToken, requireLogin);
+// router.use(getAuthToken, requireLogin);
 
 // Get my profile route
 router.get("/me", getAuthToken, requireLogin, UserController.getMeHandler); // GET /users/me
