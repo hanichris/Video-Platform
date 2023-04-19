@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import GitHubLogo from "../assets/github.svg";
 import GoogleLogo from "../assets/google.svg";
-import { getGitHubUrl } from "../utils/getGithubUrl";
 import { getGoogleUrl } from "../utils/getGoogleUrl";
 import { object, string, TypeOf } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";

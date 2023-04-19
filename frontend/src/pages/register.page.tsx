@@ -32,7 +32,7 @@ const RegisterPage = () => {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
       const response = await fetch(
-        `${SERVER_ENDPOINT}/api/auth/register`,
+        `${SERVER_ENDPOINT}/api/v1/auth/register`,
         {
           method: "POST",
           credentials: "include",
@@ -50,7 +50,7 @@ const RegisterPage = () => {
         position: "top-right",
       });
       store.setRequestLoading(false);
-      navigate("/login");
+      navigate("/profile");
     } catch (error: any) {
       store.setRequestLoading(false);
       if (error.error) {

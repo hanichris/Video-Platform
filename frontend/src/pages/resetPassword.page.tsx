@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import GitHubLogo from "../assets/github.svg";
 import GoogleLogo from "../assets/google.svg";
-import { getGitHubUrl } from "../utils/getGithubUrl";
 import { getGoogleUrl } from "../utils/getGoogleUrl";
 import { object, string, TypeOf } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -28,7 +27,7 @@ const ResetPasswordPage = () => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-      const response = await fetch(`${SERVER_ENDPOINT}/api/auth/reset-password`, {
+      const response = await fetch(`${SERVER_ENDPOINT}/api/v1/auth/reset-password`, {
         method: "POST",
         // credentials: "include",
         body: JSON.stringify(data),

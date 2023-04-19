@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useStore from "../store";
-import { IUser } from "../store/types";
+import { IUser } from "../utils/types";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const ProfilePage = () => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-      const response = await fetch(`${SERVER_ENDPOINT}/api/users/me`, {
+      const response = await fetch(`${SERVER_ENDPOINT}/users/me`, {
         credentials: "include",
       });
       if (!response.ok) {
@@ -70,20 +70,21 @@ const ProfilePage = () => {
               <div>
                 <img
                   src={
-                    user.photo.includes("default.png")
-                      ? `http://localhost:8000/api/images/${user.photo}`
-                      : user.photo
+                    String(user.avatar).includes("default.png")
+                      ? `http://localhost:8000/api/v1/thumbnails/${user.avatar}`
+                      : user.avatar
                   }
                   className="max-h-36"
                   alt={`profile photo of ${user.name}`}
                 />
               </div>
               <div className="mt-8">
-                <p className="mb-3">ID: {user.id}</p>
-                <p className="mb-3">Name: {user.name}</p>
+                <p className="mb-3">ID: {user._id}</p>
+                <p className="mb-3">Username: {user.username}</p>
                 <p className="mb-3">Email: {user.email}</p>
-                <p className="mb-3">Role: {user.role}</p>
-                <p className="mb-3">Provider: {user.provider}</p>
+                <p className="mb-3">Subscriptions: {Array(user.subscriptions).length}</p>
+                <p className="mb-3">Channels: {user.channels.length}</p>
+                <p className="mb-3">Provider: {user.fromGoogle ? "Google" : "Default"}</p>
               </div>
             </div>
           )}
