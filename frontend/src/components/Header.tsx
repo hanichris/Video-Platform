@@ -2,11 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useStore from "../store";
 import Spinner from "./Spinner";
+import Upload from "./Upload";
 
 const Header = () => {
   const store = useStore();
   const user = store.authUser;
   const navigate = useNavigate();
+  const [open, setOpen] = useState([]);
 
   const handleLogout = async () => {
     try {
@@ -77,6 +79,7 @@ const Header = () => {
                     Profile
                   </Link>
                 </li>
+                {open && <Upload setOpen={setOpen} />}
                 <li className="cursor-pointer" onClick={handleLogout}>
                   Logout
                 </li>
