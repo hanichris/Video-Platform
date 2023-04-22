@@ -4,11 +4,10 @@ import HomePage from "../pages/home.page";
 import LoginPage from "../pages/login.page";
 import ProfilePage from "../pages/profile.page";
 import RegisterPage from "../pages/register.page";
-import ForgotPasswordPage from "../pages/forgotPassword.page";
 import ResetPasswordPage from "../pages/resetPassword.page";
-import SearchPage from "../pages/searchpage";
+import SearchPage from "../pages/search.page";
 import VideoPage from "../pages/video.page";
-
+import UploadPage from "../pages/upload.page";
 
 const normalRoutes: RouteObject = {
   // path: "*",
@@ -30,10 +29,6 @@ const normalRoutes: RouteObject = {
       path: "register",
       element: <RegisterPage />,
     },
-    {
-      path: "forgot-password",
-      element: <ForgotPasswordPage />,
-    },
 	  {
       path: "reset-password",
       element: <ResetPasswordPage />,
@@ -45,19 +40,11 @@ const normalRoutes: RouteObject = {
     {
       path: "videos/search",
       element: <SearchPage />,
-    }
-    // {
-    //   path: "users/:id/history",
-    //   element: <HistoryPage />,
-    // },
-    // {
-    //   path: "users/:id/subscriptions",
-    //   element: <SubscriptionPage />,
-    // },
-    // {
-    //   path: "channel/upload",
-    //   element: <UploadPage />,
-    // },
+    },
+    {
+      path: "upload",
+      element: <UploadPage />,
+    },
     // {
     //   path: "videos/:id/download",
     //   element: <DownloadPage />,
