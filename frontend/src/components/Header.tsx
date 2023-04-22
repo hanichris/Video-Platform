@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import useStore from "../store";
 import Spinner from "./Spinner";
-import Upload from "./Upload";
 
 const Header = () => {
   const store = useStore();
@@ -79,7 +79,6 @@ const Header = () => {
                     Profile
                   </Link>
                 </li>
-                {open && <Upload setOpen={setOpen} />}
                 <li className="cursor-pointer" onClick={handleLogout}>
                   Logout
                 </li>

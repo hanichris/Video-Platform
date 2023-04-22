@@ -76,9 +76,9 @@ const SearchBar = () => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const { currentUser } = useSelector((state) => state.user);
   return (
     <>
+      <Container>
       <Search>
             <Input
               placeholder="Search"
@@ -86,6 +86,8 @@ const SearchBar = () => {
             />
             <SearchOutlinedIcon onClick={()=>navigate(`/videos/search?q=${q}`)}/>
           </Search>
+      </Container>
+      
     </>
   );
 };
