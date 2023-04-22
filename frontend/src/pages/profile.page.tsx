@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import useStore from "../store";
 import { IUser } from "../utils/types";
 
+const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
+
 const ProfilePage = () => {
   const navigate = useNavigate();
   const store = useStore();
@@ -11,7 +13,6 @@ const ProfilePage = () => {
   const fetchUser = async () => {
     try {
       store.setRequestLoading(true);
-      const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
       const response = await fetch(`${SERVER_ENDPOINT}/users/me`, {
         credentials: "include",
       });
@@ -71,7 +72,7 @@ const ProfilePage = () => {
                 <img
                   src={
                     String(user.avatar).includes("default.png")
-                      ? `http://localhost:8000/api/v1/thumbnails/${user.avatar}`
+                      ? `${SERVER_ENDPOINT}/thumbnails/${user.avatar}`
                       : user.avatar
                   }
                   className="max-h-36"

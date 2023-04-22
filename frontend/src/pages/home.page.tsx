@@ -3,7 +3,7 @@ import styled from "styled-components";
 import VideoCard from "../components/VideoCard";
 import axios from "axios";
 import IVideo from "../utils/types"
-import SearchBar from "./SearchBar"
+import SearchBar from "../components/SearchBar"
 
 const Container = styled.div`
   padding: 2em;

@@ -11,17 +11,18 @@ const Container = styled.div`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-const SearchPage = () => {
+const SearchPage = (type) => {
   const [videos, setVideos] = useState([]);
   const query = useLocation().search;
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const res = await axios.get(`${SERVER_ENDPOINT}/videos/search${query}`);
+      const searchQuery = "search" in type ? `search${query}` : type;
+      const res = await axios.get(`${SERVER_ENDPOINT}/videos/${searchQuery}`);
       setVideos(res.data);
     };
     fetchVideos();
-  }, [query]);
+  }, [type]);
 
   return <Container>
     {videos.map(video=>(
