@@ -3,9 +3,13 @@ export interface IUser {
   username: string;
   email: string;
   avatar: string;
-  subscriptions: Array;
-  history: Array;
-  channels: Array;
+  // Array of string elements
+  subscriptions: string[];
+  history: string[];
+  // Array of objects with known properties (but could have more at runtime)
+  channels: {
+    userId: string,
+  }[];
   fromGoogle: boolean;
 }
 
@@ -15,10 +19,12 @@ export interface IChannel {
   description: string;
   imgUrl: string;
   views: number;
-  tags: Array;
+  tags: string[];
   likes: number;
   dislikes: number;
-  videos: Array;
+  videos: {
+    id: string
+  }[];
   subscribers: number;
   isPublic: boolean;
 }
@@ -32,7 +38,7 @@ export interface IVideo {
   imgUrl: string;
   videoUrl: string;
   views: number;
-  tags: Array;
+  tags: string[];
   likes: number;
   dislikes: number;
   isPublic: boolean;
