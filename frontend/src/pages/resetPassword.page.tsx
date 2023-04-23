@@ -1,7 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import GitHubLogo from "../assets/github.svg";
 import GoogleLogo from "../assets/google.svg";
-import { getGitHubUrl } from "../utils/getGithubUrl";
 import { getGoogleUrl } from "../utils/getGoogleUrl";
 import { object, string, TypeOf } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -10,13 +8,21 @@ import useStore from "../store";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 
-const resetPasswordSchema = object({
+const resetPasswordModel = object({
   email: string()
     .min(1, "Email address is required")
     .email("Email Address is invalid"),
+  password: string()
+    .min(1, "Password is required")
+    .min(8, "Password must be more than 8 characters")
+    .max(32, "Password must be less than 32 characters"),
+  passwordConfirm: string().min(1, "Please confirm your password"),
+}).refine((data) => data.password === data.passwordConfirm, {
+  path: ["passwordConfirm"],
+  message: "Passwords do not match",
 });
 
-export type resetPasswordInput = TypeOf<typeof resetPasswordSchema>;
+export type resetPasswordInput = TypeOf<typeof resetPasswordModel>;
 
 const ResetPasswordPage = () => {
   const location = useLocation();
@@ -28,9 +34,9 @@ const ResetPasswordPage = () => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-      const response = await fetch(`${SERVER_ENDPOINT}/api/auth/reset-password`, {
+      const response = await fetch(`${SERVER_ENDPOINT}/auth/reset-password`, {
         method: "POST",
-        // credentials: "include",
+        credentials: "include",
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +72,7 @@ const ResetPasswordPage = () => {
   };
 
   const methods = useForm<resetPasswordInput>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(resetPasswordModel),
   });
 
   const {
@@ -92,6 +98,19 @@ const ResetPasswordPage = () => {
       <div className="container mx-auto px-6 py-12 h-full flex justify-center items-center">
         <div className="md:w-8/12 lg:w-5/12 bg-white px-8 py-10">
           <form onSubmit={handleSubmit(onSubmitHandler)}>
+          <div className="mb-6">
+              <input
+                type="email"
+                className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                placeholder="Email address"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-red-700 text-sm mt-1">
+                  {errors.email?.message}
+                </p>
+              )}
+            </div>
             <div className="mb-6">
               <input
                 type="password"

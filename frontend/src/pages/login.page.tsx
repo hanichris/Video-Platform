@@ -1,7 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import GitHubLogo from "../assets/github.svg";
 import GoogleLogo from "../assets/google.svg";
-import { getGitHubUrl } from "../utils/getGithubUrl";
 import { getGoogleUrl } from "../utils/getGoogleUrl";
 import { object, string, TypeOf } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -32,7 +30,7 @@ const LoginPage = () => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-      const response = await fetch(`${SERVER_ENDPOINT}/api/auth/login`, {
+      const response = await fetch(`${SERVER_ENDPOINT}/auth/login`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(data),
@@ -140,7 +138,7 @@ const LoginPage = () => {
                 </label>
               </div>
               <a
-                href="/forgot-password"
+                href="/reset-password"
                 className="text-blue-600 hover:text-blue-700 focus:text-blue-700 active:text-blue-800 duration-200 transition ease-in-out"
               >
                 Forgot password?

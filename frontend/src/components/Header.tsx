@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import useStore from "../store";
 import Spinner from "./Spinner";
@@ -7,6 +8,7 @@ const Header = () => {
   const store = useStore();
   const user = store.authUser;
   const navigate = useNavigate();
+  const [open, setOpen] = useState([]);
 
   const handleLogout = async () => {
     try {

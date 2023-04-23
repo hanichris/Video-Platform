@@ -19,6 +19,8 @@ function exclude<User, Key extends keyof User>(
   return user;
 }
 
+const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as unknown as string;
+
 class AuthController {
   static async registerHandler(
     req: Request<{}, {}, CreateUserInput>,
@@ -30,7 +32,8 @@ class AuthController {
       const hash = bcrypt.hashSync(req.body.password, salt);
       const user = new User({
           ...req.body,
-          password: hash,
+          "password": hash,
+          "avatar": req.body.imgUrl || DEFAULT_THUMBNAIL,
       });
       await user.save();
       const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
@@ -185,7 +188,7 @@ class AuthController {
           createdAt: new Date(),
           username: email,
           email,
-          avatar: picture,
+          avatar: picture || DEFAULT_THUMBNAIL,
           password: "",
           verified: true,
           fromGoogle: true,

@@ -4,6 +4,8 @@ import Video from "../models/video.model";
 import { ChannelModel as Channel } from "../models/channel.model";
 import createError from '../error';
 
+const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as unknown as string;
+
 class ChannelController {
   static async createChannel(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id)
@@ -15,6 +17,7 @@ class ChannelController {
       const channel = new Channel({
         "name": req.body.channelName || user.username,
         "userId": userId,
+        "imgUrl": req.body.imgUrl || DEFAULT_THUMBNAIL,
         ...req.body
       });
       if (!channel) {
@@ -27,6 +30,30 @@ class ChannelController {
     }
   };
   
+  static async updateChannel(req: Request, resp: Response, next: NextFunction) {
+    const userId = String(resp.locals.user._id)
+    const user = await User.findById(userId)
+    if (!user) {
+      return resp.status(401).json({ error: 'User not found' });
+    }
+    if (req.params.id in user.channels) {
+      try {
+        const updatedChannel = await Channel.findByIdAndUpdate(
+          req.params.id,
+          {
+            $set: req.body,
+          },
+          { new: true }
+        );
+        resp.status(200).json(updatedChannel);
+      } catch (err) {
+        next(err);
+      }
+    } else {
+      return next(createError(403, "You can only update your channel!"));
+    }
+  };
+
   static async deleteChannel(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id)
     const channel = await Channel.findById(req.params.id)
@@ -65,6 +92,7 @@ class ChannelController {
     const newVideo = new Video({ 
       userId: userId,
       channelId: channel.id,
+      imgUrl: req.body.imgUrl || DEFAULT_THUMBNAIL,
       ...req.body });
     try {
       const savedVideo = await newVideo.save();

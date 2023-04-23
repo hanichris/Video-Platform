@@ -5,7 +5,7 @@ import { requireLogin } from "../middleware/requireLogin";
 
 const router = express.Router();
 
-router.use(getAuthToken, requireLogin);
+// router.use(getAuthToken, requireLogin);
 
 // Comments route
 router.put("/:id", getAuthToken, requireLogin, CommentController.updateComment) // PUT /comments/:id

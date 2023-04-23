@@ -10,11 +10,6 @@ const GOOGLE_OAUTH_CLIENT_SECRET = process.env
 const GOOGLE_OAUTH_REDIRECT = process.env
   .GOOGLE_OAUTH_REDIRECT as unknown as string;
 
-const GITHUB_OAUTH_CLIENT_ID = process.env
-  .GITHUB_OAUTH_CLIENT_ID as unknown as string;
-const GITHUB_OAUTH_CLIENT_SECRET = process.env
-  .GITHUB_OAUTH_CLIENT_SECRET as unknown as string;
-
 interface GoogleOauthToken {
   access_token: string;
   id_token: string;

@@ -5,6 +5,8 @@ import { object, string, TypeOf } from "zod";
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getGoogleUrl } from "../utils/getGoogleUrl";
+import GoogleLogo from "../assets/google.svg";
 
 const registerUserModel = object({
   username: string().min(1, "Full name is required").max(100),
@@ -26,13 +28,14 @@ export type RegisterInput = TypeOf<typeof registerUserModel>;
 const RegisterPage = () => {
   const navigate = useNavigate();
   const store = useStore();
+  const from = ((location.state as any)?.from.pathname as string) || "/profile";
 
   const registerUser = async (data: RegisterInput) => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
       const response = await fetch(
-        `${SERVER_ENDPOINT}/api/auth/register`,
+        `${SERVER_ENDPOINT}/auth/register`,
         {
           method: "POST",
           credentials: "include",
@@ -50,7 +53,7 @@ const RegisterPage = () => {
         position: "top-right",
       });
       store.setRequestLoading(false);
-      navigate("/login");
+      navigate("/profile");
     } catch (error: any) {
       store.setRequestLoading(false);
       if (error.error) {
@@ -164,6 +167,27 @@ const RegisterPage = () => {
             >
               Sign up
             </button>
+
+            <div className="flex items-center my-4 before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
+              <p className="text-center font-semibold mx-4 mb-0">OR</p>
+            </div>
+
+            <a
+              className="px-7 py-2 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full flex justify-center items-center mb-3"
+              style={{ backgroundColor: "#3b5998" }}
+              href={getGoogleUrl(from)}
+              role="button"
+              data-mdb-ripple="true"
+              data-mdb-ripple-color="light"
+            >
+              <img
+                className="pr-2"
+                src={GoogleLogo}
+                alt=""
+                style={{ height: "2rem" }}
+              />
+              Register with Google
+            </a>
           </form>
         </div>
       </div>
