@@ -34,3 +34,5 @@ commands
 
 #folders
 node_modules
+*-lock.json
+tsconfig.tsbuildinfo
