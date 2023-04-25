@@ -33,7 +33,7 @@ class AuthController {
       const user = new User({
           ...req.body,
           "password": hash,
-          "avatar": req.body.imgUrl || DEFAULT_THUMBNAIL,
+          "avatar": DEFAULT_THUMBNAIL,
       });
       await user.save();
       const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
