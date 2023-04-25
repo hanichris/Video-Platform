@@ -76,7 +76,7 @@ const ProfilePage = () => {
                       : user.avatar
                   }
                   className="max-h-36"
-                  alt={`profile photo of ${user.name}`}
+                  alt={`profile photo of ${user.username}`}
                 />
               </div>
               <div className="mt-8">
