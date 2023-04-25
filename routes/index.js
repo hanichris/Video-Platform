@@ -5,7 +5,8 @@ const {
   UserController,
 } = require('../controllers/UsersController');
 const AuthController = require('../controllers/AuthController');
-const FilesController = require('../controllers/FilesController');
+const FilesController = require( '../controllers/FilesController' );
+const SearchController = require('../controllers/SearchController');
 
 const router = express.Router();
 
@@ -29,6 +30,9 @@ router.put('/files/:id/publish', FilesController.putPublish);
 router.put('/files/:id/unpublish', FilesController.putUnPublish);
 router.get('/files/:id/data', FilesController.getFile);
 
-router.post('/files', FilesController.postUpload);
+router.post( '/files', FilesController.postUpload );
+
+// Searches for videos by title, description, tags, filename, or fileId
+router.get( '/api/v1/search', SearchController.getSearch );
 
 module.exports = router;
