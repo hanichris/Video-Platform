@@ -1,52 +1,37 @@
 import { NextFunction, Request, Response } from "express";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import createError from "../error";
+import { S3, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Readable } from 'stream';
-import { config } from 'dotenv';
 import Video from "../models/video.model";
+import User from "../models/user.model";
+import { s3Config } from "../utils/aws";
 
-config();
-
-const s3 = new S3Client( {
-  region: process.env.S3_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-  }
-});
+const s3: S3 = new S3( s3Config );
 
 class DownloadController {
-  static async downloadVideo ( req: Request, res: Response, next: NextFunction ) {
+  static async downloadVideo ( req: Request, resp: Response, next: NextFunction ) {
+    const video = await Video.findById(req.params.id)
+    if (!video) {
+      return next(createError(404, "Video not found!"));
+    }
     try {
-      // Get Video metadata from MongoDB
-      const { id } = req.params
-      const video = await Video.findById(id);
-
-      if ( !video ) {
-        return res.status( 404 ).json( { message: 'Video not found' } );
-      }
-
       // Get Video Metadata from AWS S3 Bucket
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `${ id }.mp4`,
+        Key: video.filename
       }
 
       const command = new GetObjectCommand( params );
       const response = await s3.send( command );
-
-      // if ( response.ContentType !== 'video/mp4' ) {
-        // // return res.status( 400 ).json( { message: 'Invalid file format' } );
-      // }
-
-      const stream = Readable.from( response.Body );
+      const stream = Readable.from( response.Body as any );
 
       // Send Video to the client
-      res.set( 'Content-Type', response.ContentType );
-      res.set( 'Content-Disposition', `attachment; filename=${ video.title }.mp4` );
-      stream.pipe( res );
+      resp.set( 'Content-Type', response.ContentType );
+      resp.set( 'Content-Disposition', `attachment; filename=${ video.filename }` );
+      stream.pipe( resp );
     } catch ( e ) {
       console.error( e );
-      return res.status( 500 ).json( { message: 'Failed to download video' } );
+      return next(createError(500, "Failed to download video!"));
     }
   }
 }

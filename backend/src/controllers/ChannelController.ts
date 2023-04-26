@@ -24,6 +24,8 @@ class ChannelController {
         return next(createError(404, "Channel could not be created!"));
       }
       await channel.save()
+      user.channels.push(channel)
+      await user.save()
       resp.status(200).json(channel);
     } catch (err) {
       next(err);
@@ -36,7 +38,8 @@ class ChannelController {
     if (!user) {
       return resp.status(401).json({ error: 'User not found' });
     }
-    if (req.params.id in user.channels) {
+    const ownedChannel = user.channels.filter((channel) => channel?._id?.toString() === req.params.id)
+    if (ownedChannel) {
       try {
         const updatedChannel = await Channel.findByIdAndUpdate(
           req.params.id,
@@ -130,7 +133,6 @@ class ChannelController {
 
   static async search(req: Request, resp: Response, next: NextFunction){
     const query = req.query.q;
-    console.log(query)
     try {
       const channels = await Channel.find({
         name: { $regex: query, $options: "i" },
