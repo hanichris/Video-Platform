@@ -5,13 +5,12 @@ import styled from "styled-components";
 
 const SideContainer = styled.aside`
   float:left;
-  width:250px;
+  width:25%;
 `;
 
 const MainContainer = styled.div`
   float:right;
-  width:750px;
-  margin: 0 auto;
+  width: 75%;
 `;
 
 const HomeLayout = () => {
@@ -19,7 +18,7 @@ const HomeLayout = () => {
     <>
       <Header />
       <SideContainer>
-        <Sidebar darkMode={null} setDarkMode={null}/>
+        <Sidebar darkMode={"Light"} setDarkMode={(mode) => !mode}/>
       </SideContainer>
       <MainContainer>
         <Outlet/>
