@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-// import LamaTube from "../img/logo.png";
 import HomeIcon from "@mui/icons-material/Home";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import SubscriptionsOutlinedIcon from "@mui/icons-material/SubscriptionsOutlined";
@@ -17,8 +16,10 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import { Link } from "react-router-dom";
-// import { useSelector } from "react-redux";
+import useStore from "../store";
+
 const Container = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.bgLighter};
@@ -83,25 +84,30 @@ const Title = styled.h2`
 `;
 
 const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) => {
-//   const { currentUser } = useSelector((state:any) => state.user);
-    const currentUser = null;
+  const store = useStore();
+  const currentUser = null;
   return (
     <Container>
       <Wrapper>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Logo>
-            <Img src={"LamaTube"} />
-            VideoTube
-          </Logo>
-        </Link>
         <Item>
           <HomeIcon/>
           Home
         </Item>
+        </Link>
         <Hr />
-        {!currentUser &&
+        {currentUser &&
           <>
             <Link
+          to="upload"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <FileUploadOutlinedIcon />
+            Upload
+          </Item>
+        </Link>
+        <Link
           to="subscriptions"
           style={{ textDecoration: "none", color: "inherit" }}
         >
@@ -123,47 +129,84 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </>
         }
         <Title>BEST OF VideoTube</Title>
-        <Item>
+        <Link
+          to="tags?q=music"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <LibraryMusicOutlinedIcon />
-          Music
-        </Item>
-        <Item>
+            Music
+          </Item>
+        </Link>
+        <Link
+          to="tags?q=sports"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <SportsBasketballOutlinedIcon />
           Sports
-        </Item>
-        <Item>
+          </Item>
+        </Link>
+        <Link
+          to="tags?q=gaming"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <SportsEsportsOutlinedIcon />
           Gaming
-        </Item>
-        <Item>
+          </Item>
+        </Link>
+        <Link
+          to="tags?q=movies"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <MovieOutlinedIcon />
           Movies
-        </Item>
-        <Item>
+          </Item>
+        </Link>
+        <Link
+          to="tags?q=news"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <ArticleOutlinedIcon />
           News
-        </Item>
-        <Item>
-          <LiveTvOutlinedIcon />
-          Live
-        </Item>
+          </Item>
+        </Link>
+       
         <Hr />
-        <Item>
+        <Link
+          to="settings"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <SettingsOutlinedIcon />
           Settings
-        </Item>
-        <Item>
+          </Item>
+        </Link>
+        <Link
+          to="report"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <FlagOutlinedIcon />
           Report
-        </Item>
-        <Item>
+          </Item>
+        </Link>
+        <Link
+          to="help"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
           <HelpOutlineOutlinedIcon />
           Help
-        </Item>
-        <Item onClick={() => setDarkMode(!darkMode)}>
+          </Item>
+        </Link>
+        {/* <Item onClick={() => setDarkMode(!darkMode)}>
           <SettingsBrightnessOutlinedIcon />
           {darkMode ? "Light" : "Dark"} Mode
-        </Item>
+        </Item> */}
       </Wrapper>
     </Container>
   );
