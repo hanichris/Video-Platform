@@ -12,6 +12,7 @@ import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { format } from "timeago.js";
 import Recommendation from "../components/Recommendation";
+import { IChannel, IUser, IVideo } from "../utils/types";
 
 
 const Container = styled.div`
@@ -121,9 +122,44 @@ const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 const VideoPage = () => {
   const { id } = useParams();
-  const [channel, setChannel] = useState({});
-  const [currentUser, setUser] = useState({});
-  const [currentVideo, setVideo] = useState({});
+  const [channel, setChannel] = useState<IChannel>({
+    _id: "",
+    name: "",
+    description: "",
+    imgUrl: "",
+    views: 0,
+    tags: [],
+    likes: [],
+    dislikes: [],
+    videos: [],
+    subscribers: 0,
+    isPublic: false,
+  });
+  const [currentUser, setUser] = useState<IUser>({
+    _id: "",
+  username: "",
+  email: "",
+  avatar: "",
+  subscriptions: [],
+  history: [],
+  channels: [],
+  fromGoogle: false,
+  });
+  const [currentVideo, setVideo] = useState<IVideo>({
+    _id: "",
+  userId: "",
+  channelId: "",
+  title: "",
+  description: "",
+  imgUrl: "",
+  videoUrl: "",
+  views: 0,
+  tags: [],
+  likes: [],
+  dislikes: [],
+  isPublic: false,
+  createdAt: "",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,7 +187,7 @@ const VideoPage = () => {
   };
 
   const handleSub = async () => {
-    currentUser.subscribedUsers.includes(channel._id)
+    currentUser.subscriptions.includes(channel._id)
       ? await axios.put(`${SERVER_ENDPOINT}/users/unsubscribe/${channel._id}`)
       : await axios.put(`${SERVER_ENDPOINT}/users/subscribe/${channel._id}`);
   };

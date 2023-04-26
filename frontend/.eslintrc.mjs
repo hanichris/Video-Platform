@@ -1,16 +1,12 @@
 module.exports = {
-  settings: {
-    react: {
-      version: 'detect'
-    }
-  },
   env: {
     browser: true,
     es6: true,
     jest: true
   },
   extends: [
-    'airbnb-base',
+    'airbnb',
+    'airbnb-typescript',
     'plugin:jest/all',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended'
@@ -26,10 +22,27 @@ module.exports = {
       tsx: true
     },
     ecmaVersion: 2018,
-    sourceType: 'module'
-    // project: 'tsconfig.json',
+    sourceType: 'module',
+    project: './tsconfig.json'
   },
   plugins: ['jest', 'react', '@typescript-eslint'],
+  settings: {
+    react: {
+      version: 'detect'
+    },
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx']
+    },
+    'import/resolver': {
+      typescript: {
+        directory: './tsconfig.json'
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx']
+      }
+    }
+  },
   rules: {
     'max-classes-per-file': 'off',
     'no-underscore-dangle': 'off',

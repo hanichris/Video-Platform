@@ -16,7 +16,7 @@ class UserController {
       res.status(200).json({
         status: "success",
         data: {
-          user,
+          user: exclude(user, ["password"]),
         },
       });
     } catch (err: any) {
