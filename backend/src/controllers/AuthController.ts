@@ -4,6 +4,7 @@ import {
   getGoogleOauthToken,
   getGoogleUser,
 } from "../services/session.service";
+import ChannelController from "../controllers/ChannelController";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model"
 import bcrypt from "bcryptjs";
@@ -36,6 +37,7 @@ class AuthController {
           "avatar": DEFAULT_THUMBNAIL,
       });
       await user.save();
+      // await ChannelController.createChannel(req, resp, next)
       const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
       const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
       const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);

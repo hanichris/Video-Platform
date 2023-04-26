@@ -51,16 +51,50 @@ class VideoController {
     return resp.status(200).json(updatedVideo);
   }
 
-  static async downloadVideo(req: Request, resp: Response, next: NextFunction) {
+  static async addTag(req: Request, resp: Response, next: NextFunction) {
+    if (!req?.param?.tag) {
+      return resp.status(404).json({ error: 'No tag found' });
+    }
     const userId = String(resp.locals.user._id)
-    const video: any = await Video.findById(req.params.id);
-    if (!video || !video.isPublic|| !video.name || !video.videoUrl) {
+    if (!userId) {
+      return resp.status(401).json({ error: 'Unauthorized' });
+    }
+    const video = await Video.findById(req.params.id);
+    if (!video) {
+      console.error('Video was not found!!!');
       return resp.status(404).json({ error: 'Video not found' });
     }
-    let contentType = mime.contentType(video.name) ? ".mp4" in video.name : `${video.name}.mp4`;
-    return resp.header('Content-Type', String(contentType)).status(200).json(video)
+    const updatedVideo = await Video.findByIdAndUpdate(req.params.id,{
+      $addToSet:{tags:req.param.tag}
+    })
+    if (!updatedVideo?.isModified) {
+      return resp.status(404).json({ error: 'Video not found' });
+    }
+    return resp.status(200).json(updatedVideo);
   }
-  
+
+  static async removeTag(req: Request, resp: Response, next: NextFunction) {
+    if (!req?.param?.tag) {
+      return resp.status(404).json({ error: 'No tag found' });
+    }
+    const userId = String(resp.locals.user._id)
+    if (!userId) {
+      return resp.status(401).json({ error: 'Unauthorized' });
+    }
+    const video = await Video.findById(req.params.id);
+    if (!video) {
+      console.error('Video was not found!!!');
+      return resp.status(404).json({ error: 'Video not found' });
+    }
+    const updatedVideo = await Video.findByIdAndUpdate(req.params.id,{
+      $pull:{tags:req.param.tag}
+    })
+    if (!updatedVideo?.isModified) {
+      return resp.status(404).json({ error: 'Video not found' });
+    }
+    return resp.status(200).json(updatedVideo);
+  }
+
   static async updateVideo(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id)
     try {
@@ -112,7 +146,6 @@ class VideoController {
   };
   
   static async addView(req: Request, resp: Response, next: NextFunction) {
-    const userId = String(resp.locals.user._id)
     try {
       const video = await Video.findByIdAndUpdate(req.params.id, {
         $inc: { views: 1 },
@@ -120,8 +153,8 @@ class VideoController {
       if (!video) {
         return next(createError(404, "Video not found!"));
       }
-      if (userId) {
-        const user = await User.findById(userId);
+      if (resp?.locals?.user?._id) {
+        const user = await User.findById(String(resp.locals.user._id));
         if (user) {
           user.history.push(video.id);
           user.save();

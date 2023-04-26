@@ -130,7 +130,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
         }
         <Title>BEST OF VideoTube</Title>
         <Link
-          to="tags?q=music"
+          to="/videos/tags?q=music"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -139,7 +139,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=sports"
+          to="/videos/tags?q=sports"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -148,7 +148,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=gaming"
+          to="/videos/tags?q=gaming"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -157,7 +157,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=movies"
+          to="/videos/tags?q=movies"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -166,7 +166,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=news"
+          to="/videos/tags?q=news"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -203,10 +203,6 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           Help
           </Item>
         </Link>
-        {/* <Item onClick={() => setDarkMode(!darkMode)}>
-          <SettingsBrightnessOutlinedIcon />
-          {darkMode ? "Light" : "Dark"} Mode
-        </Item> */}
       </Wrapper>
     </Container>
   );

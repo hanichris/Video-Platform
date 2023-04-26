@@ -28,7 +28,7 @@ export type RegisterInput = TypeOf<typeof registerUserModel>;
 const RegisterPage = () => {
   const navigate = useNavigate();
   const store = useStore();
-  const from = (location.pathname as string) || "/profile";
+  const from = "/profile";
 
   const registerUser = async (data: RegisterInput) => {
     try {

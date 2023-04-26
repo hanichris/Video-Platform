@@ -13,7 +13,9 @@ import axios from "axios";
 import { format } from "timeago.js";
 import Recommendation from "../components/Recommendation";
 import { IChannel, IUser, IVideo } from "../utils/types";
-
+import useStore from "../store";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   padding: 2em;
@@ -121,8 +123,10 @@ const VideoFrame = styled.video`
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 const VideoPage = () => {
+  const store = useStore();
+  const navigate = useNavigate();
   const { id } = useParams();
-  const [channel, setChannel] = useState<IChannel>({
+  const [currentChannel, setChannel] = useState<IChannel>({
     _id: "",
     name: "",
     description: "",
@@ -174,29 +178,106 @@ const VideoPage = () => {
         setUser(userRes.data)
         setChannel(channelRes.data);
         setVideo(videoRes.data)
+        store.setAuthUser(userRes.data);
+        store.setCurrentVideo(videoRes.data);
+        store.setCurrentChannel(channelRes.data);
       } catch (err) {}
     };
     fetchData();
-  }, [id]);
+  }, []);
 
   const handleLike = async () => {
-    await axios.put(`${SERVER_ENDPOINT}/users/like/${currentVideo._id}`);
+    try {
+      await axios.put(`${SERVER_ENDPOINT}/users/like/${currentVideo?._id}`);
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      if (error?.message === "You are not logged in") {
+        navigate("/login");
+      }
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
   };
   const handleDislike = async () => {
-    await axios.put(`${SERVER_ENDPOINT}/users/dislike/${currentVideo._id}`);
+    try {
+      await axios.put(`${SERVER_ENDPOINT}/users/dislike/${currentVideo?._id}`);
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      if (error?.message === "You are not logged in") {
+        navigate("/login");
+      }
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
   };
 
   const handleSub = async () => {
-    currentUser.subscriptions.includes(channel._id)
-      ? await axios.put(`${SERVER_ENDPOINT}/users/unsubscribe/${channel._id}`)
-      : await axios.put(`${SERVER_ENDPOINT}/users/subscribe/${channel._id}`);
+    try {
+      currentUser.subscriptions.includes(currentChannel?._id)
+      ? await axios.put(`${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel?._id}`)
+      : await axios.put(`${SERVER_ENDPOINT}/users/subscribe/${currentChannel?._id}`);
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      if (error?.message === "You are not logged in") {
+        navigate("/login");
+      }
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
   };
+
+  const handleDownload = async () => {
+    try {
+      await axios.get(`${SERVER_ENDPOINT}/videos/${currentVideo?._id}/download`);
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+  };
+
+  const handleShare = async () => {}
 
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <VideoFrame src={currentVideo.videoUrl} controls />
+          <VideoFrame src={currentVideo.videoUrl} controls autoplay/>
         </VideoWrapper>
         <Title>{currentVideo.title}</Title>
         <Details>
@@ -220,10 +301,10 @@ const VideoPage = () => {
               )}{" "}
               Dislike
             </Button>
-            <Button>
+            <Button onClick={handleShare}>
               <ReplyOutlinedIcon /> Share
             </Button>
-            <Button>
+            <Button onClick={handleDownload}>
               <AddTaskOutlinedIcon /> Download
             </Button>
           </Buttons>
@@ -231,15 +312,15 @@ const VideoPage = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src={channel.imgUrl} />
+            <Image src={currentChannel.imgUrl} />
             <ChannelDetail>
-              <ChannelName>{channel.name}</ChannelName>
-              <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
+              <ChannelName>{currentChannel.name}</ChannelName>
+              <ChannelCounter>{currentChannel.subscribers} subscribers</ChannelCounter>
               <Description>{currentVideo.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
           <Subscribe onClick={handleSub}>
-            {currentUser.subscriptions?.includes(channel._id)
+            {currentUser.subscriptions?.includes(currentChannel._id)
               ? "UNSUBSCRIBE"
               : "SUBSCRIBE"}
           </Subscribe>
