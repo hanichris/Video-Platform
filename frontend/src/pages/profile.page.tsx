@@ -22,8 +22,8 @@ const ProfilePage = () => {
 
       const data = await response.json();
       const user = data.data.user as IUser;
+      // console.log(user);
       store.setRequestLoading(false);
-      console.log(user);
 
       store.setAuthUser(user);
     } catch (error: any) {
@@ -71,9 +71,7 @@ const ProfilePage = () => {
               <div>
                 <img
                   src={
-                    String(user.avatar).includes("default.png")
-                      ? `${SERVER_ENDPOINT}/thumbnails/${user.avatar}`
-                      : user.avatar
+                    String(user.avatar)
                   }
                   className="max-h-36"
                   alt={`profile photo of ${user.username}`}

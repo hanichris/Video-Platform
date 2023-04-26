@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-// import {
-//   getStorage,
-//   ref,
-//   uploadBytesResumable,
-//   getDownloadURL,
-// } from "firebase/storage";
-// import app from "../firebase";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -15,19 +8,14 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #000000a7;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding-left: 3em;
 `;
 
 const Wrapper = styled.div`
   width: 600px;
   height: 600px;
-  background-color: ${({ theme }) => theme.bgLighter};
-  color: ${({ theme }) => theme.text};
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -61,17 +49,18 @@ const Desc = styled.textarea`
 `;
 const Button = styled.button`
   border-radius: 3px;
-  border: none;
+  border: 1px;
   padding: 10px 20px;
   font-weight: 500;
   cursor: pointer;
-  background-color: ${({ theme }) => theme.soft};
+  background-color: aqua;
   color: ${({ theme }) => theme.textSoft};
 `;
 const Label = styled.label`
   font-size: 14px;
 `;
 
+const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 const Upload = () => {
   const [img, setImg] = useState(undefined);
@@ -95,7 +84,7 @@ const Upload = () => {
 
   const uploadFile = (file: File, urlType: string) => {
     // const storage = getStorage(app);
-    const fileName = new Date().getTime() + file.name;
+    // const fileName = new Date().getTime() + file.name;
     // const storageRef = ref(storage, fileName);
     // const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -137,9 +126,9 @@ const Upload = () => {
 
   const handleUpload = async (e: any)=>{
     e.preventDefault();
-    const res = await axios.post("/videos", {...inputs, tags})
+    const res = await axios.post(`${SERVER_ENDPOINT}/channels/${channelId}/upload`, {...inputs, tags})
     // setOpen(false)
-    res.status===200 && navigate(`/video/${res.data._id}`)
+    res.status===200 && navigate(`${SERVER_ENDPOINT}/videos/${res.data._id}`)
   }
 
   return (

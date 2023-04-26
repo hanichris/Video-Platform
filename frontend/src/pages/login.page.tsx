@@ -30,6 +30,7 @@ const LoginPage = () => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
+      console.log(SERVER_ENDPOINT)
       const response = await fetch(`${SERVER_ENDPOINT}/auth/login`, {
         method: "POST",
         credentials: "include",
