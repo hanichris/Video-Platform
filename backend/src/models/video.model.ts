@@ -14,7 +14,7 @@ const VideoSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    name: {
+    filename: {
       type: String,
     },
     description: {
