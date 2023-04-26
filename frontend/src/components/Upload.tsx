@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import useStore from "../store";
 
 const Container = styled.div`
   width: 100%;
@@ -62,7 +62,7 @@ const Label = styled.label`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const Upload = () => {
+const Upload = (channelId: string) => {
   const [img, setImg] = useState(undefined);
   const [video, setVideo] = useState(undefined);
   const [imgPerc, setImgPerc] = useState(0);
@@ -71,6 +71,8 @@ const Upload = () => {
   const [tags, setTags] = useState([]);
 
   const navigate = useNavigate()
+  const store = useStore();
+  const channel = store.currentChannel;
 
   const handleChange = (e: any) => {
     setInputs((prev) => {
@@ -83,37 +85,6 @@ const Upload = () => {
   };
 
   const uploadFile = (file: File, urlType: string) => {
-    // const storage = getStorage(app);
-    // const fileName = new Date().getTime() + file.name;
-    // const storageRef = ref(storage, fileName);
-    // const uploadTask = uploadBytesResumable(storageRef, file);
-
-    // uploadTask.on(
-    //   "state_changed",
-    //   (snapshot: any) => {
-    //     const progress =
-    //       (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //     urlType === "imgUrl" ? setImgPerc(Math.round(progress)) : setVideoPerc(Math.round(progress));
-    //     switch (snapshot.state) {
-    //       case "paused":
-    //         console.log("Upload is paused");
-    //         break;
-    //       case "running":
-    //         console.log("Upload is running");
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   },
-    //   (error: any) => {console.log(error)},
-    //   () => {
-    //     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL: any) => {
-    //       setInputs((prev) => {
-    //         return { ...prev, [urlType]: downloadURL };
-    //       });
-    //     });
-    //   }
-    // );
   };
 
   useEffect(() => {
@@ -126,15 +97,27 @@ const Upload = () => {
 
   const handleUpload = async (e: any)=>{
     e.preventDefault();
-    const res = await axios.post(`${SERVER_ENDPOINT}/channels/${channelId}/upload`, {...inputs, tags})
-    // setOpen(false)
-    res.status===200 && navigate(`${SERVER_ENDPOINT}/videos/${res.data._id}`)
+    try {
+      const res =  await axios.post(`${SERVER_ENDPOINT}/channels/${channel._id}/upload`, {...inputs, tags})
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+    res.status===200 && navigate(`/videos/${res.data._id}`)
   }
 
   return (
     <Container>
       <Wrapper>
-        {/* <Close onClick={() => setOpen(false)}>X</Close> */}
         <Title>Upload a New Video</Title>
         <Label>Video:</Label>
         {videoPerc > 0 ? (
