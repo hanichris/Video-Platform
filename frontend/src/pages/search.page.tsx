@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import VideoCard from "../components/VideoCard";
+import { IVideo } from "../utils/types";
 
 const Container = styled.div`
   display: flex;
@@ -11,14 +12,14 @@ const Container = styled.div`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-const SearchPage = (type) => {
-  const [videos, setVideos] = useState([]);
+const SearchPage = ({type}: {type:string}) => {
+  const [videos, setVideos] = useState<Array<IVideo>>([]);
   const query = useLocation().search;
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const searchQuery = "search" in type ? `search${query}` : type;
-      const res = await axios.get(`${SERVER_ENDPOINT}/videos/${searchQuery}`);
+      // const searchQuery = "search" in type ? `search${query}` : type;
+      const res = await axios.get(`${SERVER_ENDPOINT}/videos/${type}`);
       setVideos(res.data);
     };
     fetchVideos();
@@ -26,7 +27,7 @@ const SearchPage = (type) => {
 
   return <Container>
     {videos.map(video=>(
-      <VideoCard key={video._id} video={video}/>
+      <VideoCard key={video._id} type={null} video={video}/>
     ))}
   </Container>;
 };

@@ -5,16 +5,37 @@ module.exports = {
     jest: true,
     node: true
   },
-  extends: ['airbnb-base', 'plugin:jest/all'],
+  extends: [
+    'airbnb-base',
+    'airbnb-typescript/base',
+    'plugin:jest/all',
+    'plugin:@typescript-eslint/recommended'
+  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly'
   },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module'
+    sourceType: 'module',
+    project: './tsconfig.json'
   },
-  plugins: ['jest'],
+  plugins: ['jest', '@typescript-eslint'],
+  settings: {
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx']
+    },
+    'import/resolver': {
+      typescript: {
+        directory: './tsconfig.json'
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx']
+      }
+    }
+  },
   rules: {
     'no-console': 'off',
     'no-shadow': 'off',

@@ -28,12 +28,13 @@ export type RegisterInput = TypeOf<typeof registerUserModel>;
 const RegisterPage = () => {
   const navigate = useNavigate();
   const store = useStore();
-  const from = ((location.state as any)?.from.pathname as string) || "/profile";
+  const from = (location.pathname as string) || "/profile";
 
   const registerUser = async (data: RegisterInput) => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
+      console.log(SERVER_ENDPOINT)
       const response = await fetch(
         `${SERVER_ENDPOINT}/auth/register`,
         {

@@ -35,3 +35,8 @@ dist-ssr
 
 #commands file
 commands
+
+#folders
+node_modules
+*-lock.json
+tsconfig.tsbuildinfo

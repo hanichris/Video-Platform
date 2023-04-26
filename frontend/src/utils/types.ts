@@ -1,36 +1,30 @@
 export interface IUser {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   avatar: string;
-  // Array of string elements
-  subscriptions: string[];
-  history: string[];
-  // Array of objects with known properties (but could have more at runtime)
-  channels: {
-    userId: string,
-  }[];
+  subscriptions: Array<string>;
+  history: Array<string>;
+  channels: Array<string>;
   fromGoogle: boolean;
 }
 
 export interface IChannel {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   imgUrl: string;
   views: number;
-  tags: string[];
-  likes: number;
-  dislikes: number;
-  videos: {
-    id: string
-  }[];
+  tags: Array<string>;
+  likes: Array<string>;
+  dislikes: Array<string>;
+  videos: Array<string>;
   subscribers: number;
   isPublic: boolean;
 }
 
 export interface IVideo {
-  id: string;
+  _id: string;
   userId: string;
   channelId: string;
   title: string;
@@ -38,14 +32,15 @@ export interface IVideo {
   imgUrl: string;
   videoUrl: string;
   views: number;
-  tags: string[];
-  likes: number;
-  dislikes: number;
+  tags: Array<string>;
+  likes: Array<string>;
+  dislikes: Array<string>;
   isPublic: boolean;
+  createdAt: string;
 }
 
 export interface IComment {
-  id: string;
+  _id: string;
   userId: string;
   videoId: string;
   parentCommentId?: string;

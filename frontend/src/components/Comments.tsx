@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Comment from './Comment';
-import { IVideo } from "../utils/types"
+import { IChannel, IUser, IVideo, IComment } from "../utils/types";
 const Container = styled.div``;
 
 const NewComment = styled.div`
@@ -30,9 +30,18 @@ const Input = styled.input`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const Comments = ({ videoId }) => {
-  const [comments, setComments] = useState([]);
-  const [currentUser, setUser] = useState([]);
+const Comments = ( {videoId}: {videoId: string} ) => {
+  const [comments, setComments] = useState<Array<IComment>>([]);
+  const [currentUser, setUser] = useState<IUser>({
+    _id: "",
+  username: "",
+  email: "",
+  avatar: "",
+  subscriptions: [],
+  history: [],
+  channels: [],
+  fromGoogle: false,
+  });
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -53,7 +62,7 @@ const Comments = ({ videoId }) => {
   return (
     <Container>
       <NewComment>
-        <Avatar src={currentUser.img} />
+        <Avatar src={currentUser.avatar} />
         <Input placeholder="Add a comment..." />
       </NewComment>
       {comments.map((comment) => (

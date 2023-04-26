@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import VideoCard from "../components/VideoCard";
 import axios from "axios";
-import IVideo from "../utils/types"
+import {IVideo} from "../utils/types"
 import SearchBar from "../components/SearchBar"
 
 const Container = styled.div`
@@ -29,7 +29,7 @@ const HomePage = () => {
       <SearchBar />
       <Container>
         {videos.map((video: IVideo) => (
-          <VideoCard key={video._id} video={video}/>
+          <VideoCard key={video._id} type={null} video={video}/>
         ))}
       </Container>
     </>

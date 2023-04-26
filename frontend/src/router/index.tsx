@@ -1,5 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 import DefaultLayout from "../components/DefaultLayout";
+import HomeLayout from "../components/HomeLayout";
 import HomePage from "../pages/home.page";
 import LoginPage from "../pages/login.page";
 import ProfilePage from "../pages/profile.page";
@@ -11,7 +12,7 @@ import UploadPage from "../pages/upload.page";
 
 const normalRoutes: RouteObject = {
   // path: "*",
-  element: <DefaultLayout />,
+  element: <HomeLayout />,
   children: [
     {
       index: true,
@@ -39,7 +40,7 @@ const normalRoutes: RouteObject = {
     },
     {
       path: "videos/search",
-      element: <SearchPage />,
+      element: <SearchPage type={""}/>,
     },
     {
       path: "upload",

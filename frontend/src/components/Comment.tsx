@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { IChannel, IComment } from "../utils/types";
 
 const Container = styled.div`
   display: flex;
@@ -37,8 +38,20 @@ const Text = styled.span`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-const Comment = ({ comment }) => {
-  const [channel, setChannel] = useState({});
+const Comment = ({ comment }: {comment: IComment}) => {
+  const [channel, setChannel] = useState<IChannel>({
+    _id: "",
+    name: "",
+    description: "",
+    imgUrl: "",
+    views: 0,
+    tags: [],
+    likes: [],
+    dislikes: [],
+    videos: [],
+    subscribers: 0,
+    isPublic: false,
+  });
 
   useEffect(() => {
     if (comment.userId) {

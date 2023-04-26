@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.autoSave": "afterDelay",
+		"files.autoSaveDelay": 1000,
+		"editor.wordWrap": "wordWrapColumn",
+		"editor.wordWrapColumn": 79,
+		"editor.detectIndentation": true,
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2,
+		"files.eol": "\n",
+		"files.associations": {
+      "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+      "strings": "on"
+    },
+		"editor.codeActionsOnSave": {
+			"source.fixAll": true
+		},
+		"eslint.workingDirectories": [ "../frontend", "../backend" ],
+		"eslint.codeActionsOnSave.rules": [
+			"@typescript-eslint/semi",
+			"@typescript-eslint/indent",
+			"*"
+	]
+	}
+}
