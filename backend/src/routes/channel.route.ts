@@ -11,7 +11,7 @@ const router = express.Router();
 // Channels route
 router.get('/', ChannelController.getChannels); // GET /channels
 router.get('/:id/view', ChannelController.viewChannel); // GET /channels/:id/view
-router.put('/:id', ChannelController.updateChannel); // PUT /channels/:id
+router.put('/:id', getAuthToken, requireLogin, ChannelController.updateChannel); // PUT /channels/:id
 router.post('/', getAuthToken, requireLogin, ChannelController.createChannel); // POST /channels
 router.post('/:id/upload', getAuthToken, requireLogin, UploadController.uploadVideo); // POST /channels/:id
 router.get('/search', ChannelController.search); // GET /channels/search
