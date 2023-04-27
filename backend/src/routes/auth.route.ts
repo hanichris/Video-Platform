@@ -17,6 +17,6 @@ router.post("/login", validate(loginUserModel), AuthController.loginHandler); //
 router.get("/logout", getAuthToken, requireLogin, AuthController.logoutHandler); // GET /auth/logout
 
 // Reset user password route
-router.post("/reset-password", validate(resetPasswordModel), AuthController.resetPasswordHandler); // POST /auth/reset-password
+router.put("/reset-password", validate(resetPasswordModel), AuthController.resetPasswordHandler); // PUT /auth/reset-password
 
 export default router;
