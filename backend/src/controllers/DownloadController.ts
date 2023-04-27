@@ -26,6 +26,7 @@ class DownloadController {
       const stream = Readable.from( response.Body as any );
 
       // Send Video to the client
+      resp.status(200)
       resp.set( 'Content-Type', response.ContentType );
       resp.set( 'Content-Disposition', `attachment; filename=${ video.filename }` );
       stream.pipe( resp );

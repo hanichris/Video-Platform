@@ -9,6 +9,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model"
 import bcrypt from "bcryptjs";
 import createError from "../error";
+import { ChannelModel as Channel } from "../models/channel.model";
+import { randomUUID } from "crypto";
 
 function exclude<User, Key extends keyof User>(
   user: User,
@@ -20,7 +22,7 @@ function exclude<User, Key extends keyof User>(
   return user;
 }
 
-const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as unknown as string;
+const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
 
 class AuthController {
   static async registerHandler(
@@ -34,10 +36,23 @@ class AuthController {
       const user = new User({
           ...req.body,
           "password": hash,
-          "avatar": DEFAULT_THUMBNAIL,
+          "avatar": DEFAULT_AVATAR,
       });
       await user.save();
-      // await ChannelController.createChannel(req, resp, next)
+
+      // create default channel
+      const channel = new Channel({
+        "name": randomUUID(),
+        "userId": user._id,
+        "imgUrl": user.avatar,
+      });
+      if (!channel) {
+        return next(createError(404, "Default User Channel could not be created!"));
+      }
+      await channel.save()
+      user.channels.push(channel)
+      await user.save()
+
       const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN as unknown as number;
       const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
       const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
@@ -190,7 +205,7 @@ class AuthController {
           createdAt: new Date(),
           username: email,
           email,
-          avatar: picture || DEFAULT_THUMBNAIL,
+          avatar: picture || DEFAULT_AVATAR,
           password: "",
           verified: true,
           fromGoogle: true,

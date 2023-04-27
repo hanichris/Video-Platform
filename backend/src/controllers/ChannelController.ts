@@ -3,7 +3,9 @@ import User from "../models/user.model";
 import Video from "../models/video.model";
 import { ChannelModel as Channel } from "../models/channel.model";
 import createError from '../error';
+import { randomUUID } from "crypto";
 
+const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
 const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as unknown as string;
 
 class ChannelController {
@@ -15,9 +17,9 @@ class ChannelController {
     }
     try {
       const channel = new Channel({
-        "name": req.body.channelName || user.username,
+        "name": req.body.channelName || randomUUID(),
         "userId": userId,
-        "imgUrl": req.body.imgUrl || DEFAULT_THUMBNAIL,
+        "imgUrl": req.body.imgUrl || user.avatar,
         ...req.body
       });
       if (!channel) {

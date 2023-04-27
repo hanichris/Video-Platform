@@ -101,9 +101,10 @@ class UserController {
   
   static async like(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id)
+    console.log(userId)
     const videoId = req.params.videoId;
     try {
-      await Video.findByIdAndUpdate(videoId,{
+      await Video.findByIdAndUpdate(videoId, {
         $addToSet:{likes:userId},
         $pull:{dislikes:userId}
       })
@@ -163,6 +164,16 @@ class UserController {
       );
 
       resp.status(200).json(list.flat().sort((a: any, b: any) => b.updatedAt - a.updatedAt));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  static async getAllUsers(req: Request, resp: Response, next: NextFunction) {
+    try {
+      const users = await User.find({ });
+      if (!users) return next(createError(404, "No Users found!"));
+      resp.status(200).json(users);
     } catch (err) {
       next(err);
     }
