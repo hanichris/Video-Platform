@@ -9,6 +9,8 @@ import ResetPasswordPage from "../pages/resetPassword.page";
 import SearchPage from "../pages/search.page";
 import VideoPage from "../pages/video.page";
 import UploadPage from "../pages/upload.page";
+import HistoryPage from "../pages/history.page";
+import SubscriptionsPage from "../pages/subscriptions.page";
 
 const normalRoutes: RouteObject = {
   // path: "*",
@@ -21,6 +23,14 @@ const normalRoutes: RouteObject = {
     {
       path: "profile",
       element: <ProfilePage />,
+    },
+    {
+      path: "subscriptions",
+      element: <SubscriptionsPage />,
+    },
+    {
+      path: "history",
+      element: <HistoryPage />,
     },
     {
       path: "login",
@@ -40,16 +50,12 @@ const normalRoutes: RouteObject = {
     },
     {
       path: "videos/search",
-      element: <SearchPage type={""}/>,
+      element: <SearchPage/>,
     },
     {
       path: "upload",
       element: <UploadPage />,
     },
-    // {
-    //   path: "videos/:id/download",
-    //   element: <DownloadPage />,
-    // },
   ],
 };
 
