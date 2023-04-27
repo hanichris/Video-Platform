@@ -31,11 +31,12 @@ const ResetPasswordPage = () => {
   const from = ((location.state as any)?.from.pathname as string) || "/profile";
 
   const resetUserPassword = async (data: resetPasswordInput) => {
+    console.log("here")
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
       const response = await fetch(`${SERVER_ENDPOINT}/auth/reset-password`, {
-        method: "POST",
+        method: "PUT",
         credentials: "include",
         body: JSON.stringify(data),
         headers: {
@@ -83,9 +84,9 @@ const ResetPasswordPage = () => {
   } = methods;
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
+    // if (isSubmitSuccessful) {
+    //   reset();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
 
@@ -118,22 +119,22 @@ const ResetPasswordPage = () => {
                 placeholder="Create new password"
                 {...register("password")}
               />
-              {errors.email && (
+              {errors.password && (
                 <p className="text-red-700 text-sm mt-1">
-                  {errors.email?.message}
+                  {errors.password?.message}
                 </p>
               )}
             </div>
-			<div className="mb-6">
+            <div className="mb-6">
               <input
                 type="password"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                placeholder="Re-enter the password"
-                {...register("password")}
+                placeholder="Confirm Password"
+                {...register("passwordConfirm")}
               />
-              {errors.email && (
+              {errors.passwordConfirm && (
                 <p className="text-red-700 text-sm mt-1">
-                  {errors.email?.message}
+                  {errors.passwordConfirm?.message}
                 </p>
               )}
             </div>

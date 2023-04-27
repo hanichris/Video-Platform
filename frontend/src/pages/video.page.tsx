@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
+import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -114,7 +115,6 @@ const Subscribe = styled.button`
 `;
 
 const VideoFrame = styled.video`
-  autoplay: true;
   max-height: 720px;
   width: 100%;
   object-fit: cover;
@@ -138,6 +138,7 @@ const VideoPage = () => {
     videos: [],
     subscribers: 0,
     isPublic: false,
+    createdAt: ""
   });
   const [currentUser, setUser] = useState<IUser>({
     _id: "",
@@ -173,7 +174,8 @@ const VideoPage = () => {
           `${SERVER_ENDPOINT}/channels/${videoRes.data.channelId}/view`
         );
         const userRes = await axios.get(
-          `${SERVER_ENDPOINT}/users/${channelRes.data.userId}`
+          `${SERVER_ENDPOINT}/users/${channelRes.data.userId}`,
+          {withCredentials: true}
         );
         setUser(userRes.data)
         setChannel(channelRes.data);
@@ -183,12 +185,15 @@ const VideoPage = () => {
         store.setCurrentChannel(channelRes.data);
       } catch (err) {}
     };
-    fetchData();
-  }, []);
+    //fetchData();
+  }, [currentVideo]);
 
   const handleLike = async () => {
     try {
-      await axios.put(`${SERVER_ENDPOINT}/users/like/${currentVideo?._id}`);
+      await axios.put(`${SERVER_ENDPOINT}/users/like/${id}`, 
+      {}, {
+        withCredentials: true,
+      });
     } catch (error: any) {
       console.log(error?.message)
       const resMessage =
@@ -209,7 +214,10 @@ const VideoPage = () => {
   };
   const handleDislike = async () => {
     try {
-      await axios.put(`${SERVER_ENDPOINT}/users/dislike/${currentVideo?._id}`);
+      await axios.put(`${SERVER_ENDPOINT}/users/dislike/${id}`,
+      {}, {
+        withCredentials: true,
+      });
     } catch (error: any) {
       console.log(error?.message)
       const resMessage =
@@ -232,8 +240,12 @@ const VideoPage = () => {
   const handleSub = async () => {
     try {
       currentUser.subscriptions.includes(currentChannel?._id)
-      ? await axios.put(`${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel?._id}`)
-      : await axios.put(`${SERVER_ENDPOINT}/users/subscribe/${currentChannel?._id}`);
+      ? await axios.put(`${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel?._id}`, {}, {
+        withCredentials: true,
+      })
+      : await axios.put(`${SERVER_ENDPOINT}/users/subscribe/${currentChannel?._id}`, {}, {
+        withCredentials: true,
+      });
     } catch (error: any) {
       console.log(error?.message)
       const resMessage =
@@ -253,9 +265,39 @@ const VideoPage = () => {
     }
   };
 
+  const handlePlay = async () => {
+    try {
+      await axios.put(`${SERVER_ENDPOINT}/videos/${id}/view`);
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+  };
+  
   const handleDownload = async () => {
     try {
-      await axios.get(`${SERVER_ENDPOINT}/videos/${currentVideo?._id}/download`);
+      axios({
+        url: `${SERVER_ENDPOINT}/videos/${id}/download`,
+        method: 'GET',
+        responseType: 'blob',
+      }).then((response) => {
+        const urlObject = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = urlObject;
+        link.setAttribute('download', 'video.mp4');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
     } catch (error: any) {
       console.log(error?.message)
       const resMessage =
@@ -271,13 +313,16 @@ const VideoPage = () => {
     }
   };
 
+  // TODO share functionality
   const handleShare = async () => {}
 
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <VideoFrame src={currentVideo.videoUrl} controls autoplay/>
+          <VideoFrame
+          onPlay={handlePlay}
+          src={`${SERVER_ENDPOINT}/videos/${id}/stream`} controls/>
         </VideoWrapper>
         <Title>{currentVideo.title}</Title>
         <Details>
@@ -305,7 +350,7 @@ const VideoPage = () => {
               <ReplyOutlinedIcon /> Share
             </Button>
             <Button onClick={handleDownload}>
-              <AddTaskOutlinedIcon /> Download
+              <DownloadForOfflineOutlinedIcon /> Download
             </Button>
           </Buttons>
         </Details>
@@ -315,7 +360,9 @@ const VideoPage = () => {
             <Image src={currentChannel.imgUrl} />
             <ChannelDetail>
               <ChannelName>{currentChannel.name}</ChannelName>
-              <ChannelCounter>{currentChannel.subscribers} subscribers</ChannelCounter>
+              <ChannelCounter>
+                {currentChannel.subscribers > 0 ? currentChannel.subscribers : 0} subscribers
+              </ChannelCounter>
               <Description>{currentVideo.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
