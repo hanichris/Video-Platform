@@ -3,6 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useStore from "../store";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   width: 100%;
@@ -62,7 +63,7 @@ const Label = styled.label`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const Upload = (channelId: string) => {
+const Upload = ({channelId} : {channelId: string}) => {
   const [img, setImg] = useState(undefined);
   const [video, setVideo] = useState(undefined);
   const [imgPerc, setImgPerc] = useState(0);
@@ -85,20 +86,33 @@ const Upload = (channelId: string) => {
   };
 
   const uploadFile = (file: File, urlType: string) => {
+    setInputs((prev) => {
+      return { ...prev, [urlType]: file };
+    });
   };
 
   useEffect(() => {
-    video && uploadFile(video , "videoUrl");
+    video && uploadFile(video , "video");
   }, [video]);
 
-  useEffect(() => {
-    img && uploadFile(img, "imgUrl");
-  }, [img]);
+  // useEffect(() => {
+  //   img && uploadFile(img, "imgUrl");
+  // }, [img]);
 
   const handleUpload = async (e: any)=>{
     e.preventDefault();
     try {
-      const res =  await axios.post(`${SERVER_ENDPOINT}/channels/${channel._id}/upload`, {...inputs, tags})
+      const res = await axios.post(`${SERVER_ENDPOINT}/channels/${channelId}/upload`, 
+                    {...inputs, tags},
+                    { 
+                      withCredentials: true,
+                      headers: {
+                        // 'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/multipart/form-data'
+                      }
+                    },
+                    )
+      res.status===200 && navigate(`/videos/${res.data._id}`)
     } catch (error: any) {
       console.log(error?.message)
       const resMessage =
@@ -112,7 +126,6 @@ const Upload = (channelId: string) => {
         position: "top-right",
       });
     }
-    res.status===200 && navigate(`/videos/${res.data._id}`)
   }
 
   return (
@@ -137,7 +150,7 @@ const Upload = (channelId: string) => {
         />
         <Desc
           placeholder="Description"
-          name="desc"
+          name="description"
           rows={8}
           onChange={handleChange}
         />
@@ -146,7 +159,7 @@ const Upload = (channelId: string) => {
           placeholder="Separate the tags with commas."
           onChange={handleTags}
         />
-        <Label>Image:</Label>
+        {/* <Label>Image:</Label>
         {imgPerc > 0 ? (
           "Uploading:" + imgPerc + "%"
         ) : (
@@ -155,7 +168,7 @@ const Upload = (channelId: string) => {
             accept="image/*"
             onChange={(e) => setImg((e.target as any).files[0])}
           />
-        )}
+        )} */}
         <Button onClick={handleUpload}>Upload</Button>
       </Wrapper>
     </Container>

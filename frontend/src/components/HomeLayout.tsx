@@ -5,12 +5,12 @@ import styled from "styled-components";
 
 const SideContainer = styled.aside`
   float:left;
-  width:25%;
+  width:20%;
 `;
 
 const MainContainer = styled.div`
   float:right;
-  width: 75%;
+  width: 80%;
 `;
 
 const HomeLayout = () => {

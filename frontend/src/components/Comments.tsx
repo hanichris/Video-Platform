@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import Comment from './Comment';
 import { IChannel, IUser, IVideo, IComment } from "../utils/types";
 import { useNavigate } from "react-router-dom";
+import useStore from "../store";
+import { toast } from "react-toastify";
 
 const Container = styled.div``;
 
@@ -43,18 +45,20 @@ const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 const Comments = ( {videoId}: {videoId: string} ) => {
   const navigate = useNavigate();
-  const [newcomment, setNewComment] = useState<Array<IComment>>([]);
+  const store = useStore();
+  const [newcomment, setNewComment] = useState<string>();
   const [comments, setComments] = useState<Array<IComment>>([]);
-  const [currentUser, setUser] = useState<IUser>({
-    _id: "",
-  username: "",
-  email: "",
-  avatar: "",
-  subscriptions: [],
-  history: [],
-  channels: [],
-  fromGoogle: false,
-  });
+  // const [currentUser, setUser] = useState<IUser>({
+  //   _id: "",
+  // username: "",
+  // email: "",
+  // avatar: "",
+  // subscriptions: [],
+  // history: [],
+  // channels: [],
+  // fromGoogle: false,
+  // });
+  const currentUser = store.authUser;
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -72,7 +76,11 @@ const Comments = ( {videoId}: {videoId: string} ) => {
 
   const handleAddComment = async () => {
     try {
-      await axios.post(`${SERVER_ENDPOINT}/comments/${currentVideo?._id}`, {newcomment});
+      await axios.post(`${SERVER_ENDPOINT}/comments/${videoId}`, 
+      {description: newcomment},
+      {
+        withCredentials: true,
+      });
     } catch (error: any) {
       console.log(error?.message)
       const resMessage =
@@ -95,17 +103,17 @@ const Comments = ( {videoId}: {videoId: string} ) => {
   return (
     <Container>
       <NewComment>
-        <Avatar src={currentUser.avatar} />
+        <Avatar src={currentUser?.avatar} />
         <Input 
           placeholder="Add a comment..."
           onChange={(e) => setNewComment(e.target.value)}
         />
         <Button onClick={handleAddComment}>
-          Send
+          Add
         </Button>
       </NewComment>
       {comments.map((comment) => (
-        <Comment key={comment._id} comment={comment}/>
+        <Comment key={comment._id} videoId={videoId} comment={comment}/>
       ))}
     </Container>
   );

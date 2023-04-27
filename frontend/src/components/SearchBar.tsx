@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import { Link, useNavigate } from "react-router-dom";
 
 
