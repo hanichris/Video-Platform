@@ -40,3 +40,5 @@ commands
 node_modules
 *-lock.json
 tsconfig.tsbuildinfo
+STATE.md
+SECRETS

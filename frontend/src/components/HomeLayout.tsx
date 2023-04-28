@@ -1,16 +1,16 @@
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
-import Sidebar from "./SideBar";
+import SideBar from "./Sidebar";
 import styled from "styled-components";
 
 const SideContainer = styled.aside`
   float:left;
-  width:25%;
+  width:20%;
 `;
 
 const MainContainer = styled.div`
   float:right;
-  width: 75%;
+  width: 80%;
 `;
 
 const HomeLayout = () => {
@@ -18,7 +18,7 @@ const HomeLayout = () => {
     <>
       <Header />
       <SideContainer>
-        <Sidebar darkMode={"Light"} setDarkMode={(mode) => !mode}/>
+        <SideBar darkMode={"Light"} setDarkMode={(mode: any) => !mode}/>
       </SideContainer>
       <MainContainer>
         <Outlet/>

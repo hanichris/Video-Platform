@@ -21,6 +21,7 @@ export interface IChannel {
   videos: Array<string>;
   subscribers: number;
   isPublic: boolean;
+  createdAt: string;
 }
 
 export interface IVideo {
@@ -47,4 +48,5 @@ export interface IComment {
   description: string;
   upvotes: number;
   downvotes: number;
+  createdAt: string;
 }

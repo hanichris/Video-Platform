@@ -4,6 +4,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Comment from './Comment';
 import { IChannel, IUser, IVideo, IComment } from "../utils/types";
+import { useNavigate } from "react-router-dom";
+import useStore from "../store";
+import { toast } from "react-toastify";
+
 const Container = styled.div``;
 
 const NewComment = styled.div`
@@ -27,21 +31,34 @@ const Input = styled.input`
   padding: 5px;
   width: 100%;
 `;
+const Button = styled.button`
+  border-radius: 3px;
+  border: 1px;
+  padding: 10px 20px;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #cc1a00;
+  color: white;
+`;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 const Comments = ( {videoId}: {videoId: string} ) => {
+  const navigate = useNavigate();
+  const store = useStore();
+  const [newcomment, setNewComment] = useState<string>();
   const [comments, setComments] = useState<Array<IComment>>([]);
-  const [currentUser, setUser] = useState<IUser>({
-    _id: "",
-  username: "",
-  email: "",
-  avatar: "",
-  subscriptions: [],
-  history: [],
-  channels: [],
-  fromGoogle: false,
-  });
+  // const [currentUser, setUser] = useState<IUser>({
+  //   _id: "",
+  // username: "",
+  // email: "",
+  // avatar: "",
+  // subscriptions: [],
+  // history: [],
+  // channels: [],
+  // fromGoogle: false,
+  // });
+  const currentUser = store.authUser;
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -57,16 +74,46 @@ const Comments = ( {videoId}: {videoId: string} ) => {
     fetchComments();
   }, [videoId]);
 
-  // TODO: ADD NEW COMMENT FUNCTIONALITY
+  const handleAddComment = async () => {
+    try {
+      await axios.post(`${SERVER_ENDPOINT}/comments/${videoId}`, 
+      {description: newcomment},
+      {
+        withCredentials: true,
+      });
+    } catch (error: any) {
+      console.log(error?.message)
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      if (error?.message === "You are not logged in") {
+        navigate("/login");
+      }
+
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+  };
 
   return (
     <Container>
       <NewComment>
-        <Avatar src={currentUser.avatar} />
-        <Input placeholder="Add a comment..." />
+        <Avatar src={currentUser?.avatar} />
+        <Input 
+          placeholder="Add a comment..."
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+        <Button onClick={handleAddComment}>
+          Add
+        </Button>
       </NewComment>
       {comments.map((comment) => (
-        <Comment key={comment._id} comment={comment}/>
+        <Comment key={comment._id} videoId={videoId} comment={comment}/>
       ))}
     </Container>
   );

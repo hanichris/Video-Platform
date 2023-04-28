@@ -14,10 +14,13 @@ const Container = styled.div`
 `;
 
 const UploadPage = () => {
+  const store = useStore();
+  const channelId = store.currentChannel?._id || "";
+  console.log(channelId)
   return (
     <>
       <Container>
-        <Upload/>
+        <Upload channelId={channelId}/>
       </Container>
     </>
   );

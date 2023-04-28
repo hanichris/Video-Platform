@@ -85,7 +85,8 @@ const Title = styled.h2`
 
 const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) => {
   const store = useStore();
-  const currentUser = null;
+  const currentUser = store.authUser;
+
   return (
     <Container>
       <Wrapper>
@@ -130,7 +131,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
         }
         <Title>BEST OF VideoTube</Title>
         <Link
-          to="tags?q=music"
+          to="/videos/search?tags=music"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -139,7 +140,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=sports"
+          to="/videos/search?tags=sports"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -148,7 +149,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=gaming"
+          to="/videos/search?tags=gaming"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -157,7 +158,7 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=movies"
+          to="/videos/search?tags=movies"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -166,12 +167,21 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           </Item>
         </Link>
         <Link
-          to="tags?q=news"
+          to="/videos/search?tags=news"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
           <ArticleOutlinedIcon />
           News
+          </Item>
+        </Link>
+        <Link
+          to="/videos/search?tags=tutorials"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+          <VideoLibraryOutlinedIcon />
+          Tutorials
           </Item>
         </Link>
        
@@ -203,10 +213,6 @@ const SideBar = ({ darkMode, setDarkMode }: { darkMode:any, setDarkMode:any }) =
           Help
           </Item>
         </Link>
-        {/* <Item onClick={() => setDarkMode(!darkMode)}>
-          <SettingsBrightnessOutlinedIcon />
-          {darkMode ? "Light" : "Dark"} Mode
-        </Item> */}
       </Wrapper>
     </Container>
   );

@@ -8,7 +8,11 @@ import Comment from "../models/comment.model"
 
 export default class AppController {
   static getStatus(req: Request, resp: Response, next: NextFunction) {
-    resp.status(200).json({ redis: redisClient.isAlive(), db: dbClient.isAlive() });
+    resp.status(200).json(
+      { 
+        redis: redisClient.isAlive(),
+        db: dbClient.isAlive() 
+      });
   }
 
   static async getStats(req: Request, resp: Response, next: NextFunction) {

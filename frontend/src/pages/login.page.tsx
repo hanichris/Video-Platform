@@ -80,9 +80,9 @@ const LoginPage = () => {
   } = methods;
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
+    // if (isSubmitSuccessful) {
+    //   reset();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
 

@@ -18,9 +18,6 @@ const upload = multer({ storage: storage }).single('video');
 
 class UploadController {
   static async uploadVideo(req: Request, resp: Response, next: NextFunction) {
-    // if (!req?.file) {
-    //   return next(createError(404, "No File to upload!"));
-    // }
     const userId = String(resp.locals.user._id)
     const user = await User.findById(userId)
     if (!user) {
@@ -60,6 +57,7 @@ class UploadController {
         // Save the video metadata to MongoDB
         const video = new Video({
           userId: userId,
+          channelId: channel._id,
           imgUrl: req.body.imgUrl || process.env.DEFAULT_THUMBNAIL,
           title: req.body.title,
           filename: `${videoUUID}.mp4`,

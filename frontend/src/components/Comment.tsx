@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { IChannel, IComment } from "../utils/types";
+import {format} from "timeago.js";
+import useStore from "../store";
 
 const Container = styled.div`
   display: flex;
@@ -38,38 +40,39 @@ const Text = styled.span`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-const Comment = ({ comment }: {comment: IComment}) => {
-  const [channel, setChannel] = useState<IChannel>({
-    _id: "",
-    name: "",
-    description: "",
-    imgUrl: "",
-    views: 0,
-    tags: [],
-    likes: [],
-    dislikes: [],
-    videos: [],
-    subscribers: 0,
-    isPublic: false,
-  });
+const Comment = ({ videoId, comment }: {videoId: string, comment: IComment}) => {
+  const store = useStore();
+  const user = store.authUser;
+  // const [channel, setChannel] = useState<IChannel>({
+  //   _id: "",
+  //   name: "",
+  //   description: "",
+  //   imgUrl: "",
+  //   views: 0,
+  //   tags: [],
+  //   likes: [],
+  //   dislikes: [],
+  //   videos: [],
+  //   subscribers: 0,
+  //   isPublic: false,
+  //   createdAt: ""
+  // });
 
   useEffect(() => {
-    if (comment.userId) {
       const fetchComment = async () => {
-        const videoRes = await axios.get(`${SERVER_ENDPOINT}/videos/${comment.videoId}`);
-        // const channelRes = await axios.get(`${SERVER_ENDPOINT}/channels/${videoRes.data.channelId}`);
-        // setChannel(channelRes.data)
+        const videoRes = await axios.get(`${SERVER_ENDPOINT}/videos/${videoId}`);
+        // const userRes = await axios.get(`${SERVER_ENDPOINT}/users/${videoRes.data.userId}`);
+        // setChannel(userRes.data)
       };
       fetchComment();
-    }
-  }, [comment.userId]);
+  }, [videoId]);
 
   return (
     <Container>
-      <Avatar src={channel.imgUrl} />
+      <Avatar src={user?.avatar} />
       <Details>
         <Name>
-          {channel.name} <Date>1 day ago</Date>
+          {user?.username} • {format(comment.createdAt)}
         </Name>
         <Text>{comment.description}</Text>
       </Details>
