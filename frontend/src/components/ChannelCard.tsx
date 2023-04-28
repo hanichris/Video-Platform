@@ -55,38 +55,37 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-const VideoCard = ({ type, video }: {type:any, video:IVideo}) => {
-  const [channel, setChannel] = useState<IChannel>({
-    _id: "",
-    name: "",
-    description: "",
-    imgUrl: "",
-    views: 0,
-    tags: [],
-    likes: [],
-    dislikes: [],
-    videos: [],
-    subscribers: 0,
-    isPublic: false,
-    createdAt: ""
-  });
+const ChannelCard = ({ channel }: { channel:IChannel}) => {
+  // const [channel, setChannel] = useState<IChannel>({
+  //   _id: "",
+  //   name: "",
+  //   description: "",
+  //   imgUrl: "",
+  //   views: 0,
+  //   tags: [],
+  //   likes: [],
+  //   dislikes: [],
+  //   videos: [],
+  //   subscribers: 0,
+  //   isPublic: false,
+  // });
   const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-  useEffect(() => {
-    const fetchChannel = async () => {
-      const res = await axios.get(`${SERVER_ENDPOINT}/channels/${video.channelId}/view`);
-      setChannel(res.data);
-    };
-    fetchChannel();
-  }, [video.userId]);
+  // useEffect(() => {
+  //   const fetchChannel = async () => {
+  //     const res = await axios.get(`${SERVER_ENDPOINT}/channels/${channel.channelId}/view`);
+  //     setChannel(res.data);
+  //   };
+  //   fetchChannel();
+  // }, [channel.userId]);
 
   return (
-    <Link to={`/videos/${video._id}`} style={{ textDecoration: "none" }}>
-      <Container 
+    <Link to={`/channels/${channel._id}`} style={{ textDecoration: "none" }}>
+      <Container
         // type={type}
         >
         <Image
           // type={type}
-          src={video.imgUrl}
+          src={channel.imgUrl}
         />
         <Details 
         // type={type}
@@ -96,9 +95,9 @@ const VideoCard = ({ type, video }: {type:any, video:IVideo}) => {
             src={channel.imgUrl}
           />
           <Texts>
-            <Title>{video.title}</Title>
+            <Title>{channel.name}</Title>
             <ChannelName>{channel.name}</ChannelName>
-            <Info>{video.views} views • {format(video.createdAt)}</Info>
+            <Info>{channel.views} views • {format(channel.createdAt)}</Info>
           </Texts>
         </Details>
       </Container>
@@ -106,4 +105,4 @@ const VideoCard = ({ type, video }: {type:any, video:IVideo}) => {
   );
 };
 
-export default VideoCard;
+export default ChannelCard;

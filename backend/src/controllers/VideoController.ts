@@ -52,7 +52,7 @@ class VideoController {
   }
 
   static async addTag(req: Request, resp: Response, next: NextFunction) {
-    if (!req?.param?.tag) {
+    if (!req?.body?.tags) {
       return resp.status(404).json({ error: 'No tag found' });
     }
     const userId = String(resp.locals.user._id)
@@ -65,7 +65,7 @@ class VideoController {
       return resp.status(404).json({ error: 'Video not found' });
     }
     const updatedVideo = await Video.findByIdAndUpdate(req.params.id,{
-      $addToSet:{tags:req.param.tag}
+      $addToSet:{tags:req.body.tag}
     })
     if (!updatedVideo?.isModified) {
       return resp.status(404).json({ error: 'Video not found' });
@@ -74,7 +74,7 @@ class VideoController {
   }
 
   static async removeTag(req: Request, resp: Response, next: NextFunction) {
-    if (!req?.param?.tag) {
+    if (!req?.body?.tags) {
       return resp.status(404).json({ error: 'No tag found' });
     }
     const userId = String(resp.locals.user._id)
@@ -87,7 +87,7 @@ class VideoController {
       return resp.status(404).json({ error: 'Video not found' });
     }
     const updatedVideo = await Video.findByIdAndUpdate(req.params.id,{
-      $pull:{tags:req.param.tag}
+      $pull:{tags:req.body.tag}
     })
     if (!updatedVideo?.isModified) {
       return resp.status(404).json({ error: 'Video not found' });
@@ -187,7 +187,8 @@ class VideoController {
   };
   
   static async getByTag(req: Request, resp: Response, next: NextFunction) {
-    const tags = req?.query?.tags?.toString().split(",");
+    let tags = req?.query?.tags?.toString().split(",");
+    tags = tags?.map((item: string) => (String(item.charAt(0))).toUpperCase() + item.slice(1))
     try {
       const videos = await Video.find({ tags: { $in: tags } }).limit(20);
       if (!videos) return next(createError(404, "Videos not found!"));

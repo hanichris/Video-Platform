@@ -7,6 +7,9 @@ const router = express.Router();
 
 // router.use(getAuthToken, requireLogin);
 
+// Get all users
+router.get("/", getAuthToken, requireLogin, UserController.getAllUsers); // GET /users
+
 // Get my profile route
 router.get("/me", getAuthToken, requireLogin, UserController.getMeHandler); // GET /users/me
 
