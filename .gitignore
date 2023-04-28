@@ -1,6 +1,10 @@
-#Gitignore
+# configuration file
 .gitignore
-
+.config
+node_modules
+usersAndDbStatus.sh
+restart-services.sh
+*.png
 # Logs
 logs
 *.log
