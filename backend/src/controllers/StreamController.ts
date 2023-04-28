@@ -16,7 +16,10 @@ const s3: S3 = new S3( s3Config );
 // ffmpeg.setFfmpegPath('/usr/bin/ffmpeg');
 
 // Windows
-ffmpeg.setFfmpegPath("C:\\ProgramData\\chocolatey\\bin\\ffmpeg.exe");
+ffmpeg.setFfmpegPath( "C:\\ProgramData\\chocolatey\\bin\\ffmpeg.exe" );
+
+// Mac
+// ffmpeg.setFfmpegPath('/usr/local/bin/ffmpeg');
 
 class StreamingController {
   static async getStream(req: Request, resp: Response, next: NextFunction) {
@@ -53,7 +56,7 @@ class StreamingController {
       })
      .on('codecData', data => {
         // HERE YOU GET THE TOTAL TIME
-        totalTime = parseInt(data.duration.replace(/:/g, '')) 
+        totalTime = parseInt(data.duration.replace(/:/g, ''))
      })
       .on('error', function(err: any,stdout:any,stderr:any) {
           console.log('an error happened: ' + err.message);
