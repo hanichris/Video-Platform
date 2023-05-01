@@ -1,69 +1,70 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import GoogleLogo from "../assets/google.svg";
-import { getGoogleUrl } from "../utils/getGoogleUrl";
-import { object, string, TypeOf } from "zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import useStore from "../store";
-import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { object, string, TypeOf } from 'zod';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import useStore from '../store';
+import { getGoogleUrl } from '../utils/getGoogleUrl';
+import GoogleLogo from '../assets/google.svg';
 
 const loginUserModel = object({
   email: string()
-    .min(1, "Email address is required")
-    .email("Email Address is invalid"),
+    .min(1, 'Email address is required')
+    .email('Email Address is invalid'),
   password: string()
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
+    .min(1, 'Password is required')
+    .min(8, 'Password must be more than 8 characters')
+    .max(32, 'Password must be less than 32 characters'),
 });
 
 export type LoginInput = TypeOf<typeof loginUserModel>;
 
-const LoginPage = () => {
+function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const store = useStore();
-  const from = ((location.state as any)?.from.pathname as string) || "/profile";
+  const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
   const loginUser = async (data: LoginInput) => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-      console.log(SERVER_ENDPOINT)
-      const response = await fetch(`${SERVER_ENDPOINT}/auth/login`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
+      console.log(SERVER_ENDPOINT);
+      const response = await axios.post(
+        `${SERVER_ENDPOINT}/auth/login`,
+        JSON.stringify(data),
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
-      if (!response.ok) {
-        throw await response.json();
+      );
+      if (response.status !== 200) {
+        throw response.statusText;
       }
 
       store.setRequestLoading(false);
-      navigate("/profile");
+      navigate('/profile');
     } catch (error: any) {
       store.setRequestLoading(false);
       if (error.error) {
         error.error.forEach((err: any) => {
           toast.error(err.message, {
-            position: "top-right",
+            position: 'top-right',
           });
         });
         return;
       }
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -79,13 +80,6 @@ const LoginPage = () => {
     formState: { isSubmitSuccessful, errors },
   } = methods;
 
-  useEffect(() => {
-    // if (isSubmitSuccessful) {
-    //   reset();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubmitSuccessful]);
-
   const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
     loginUser(values);
   };
@@ -100,7 +94,7 @@ const LoginPage = () => {
                 type="email"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Email address"
-                {...register("email")}
+                {...register('email')}
               />
               {errors.email && (
                 <p className="text-red-700 text-sm mt-1">
@@ -114,7 +108,7 @@ const LoginPage = () => {
                 type="password"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Password"
-                {...register("password")}
+                {...register('password')}
               />
 
               {errors.password && (
@@ -162,7 +156,7 @@ const LoginPage = () => {
 
             <a
               className="px-7 py-2 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full flex justify-center items-center mb-3"
-              style={{ backgroundColor: "#3b5998" }}
+              style={{ backgroundColor: '#3b5998' }}
               href={getGoogleUrl(from)}
               role="button"
               data-mdb-ripple="true"
@@ -172,7 +166,7 @@ const LoginPage = () => {
                 className="pr-2"
                 src={GoogleLogo}
                 alt=""
-                style={{ height: "2rem" }}
+                style={{ height: '2rem' }}
               />
               Continue with Google
             </a>
@@ -181,6 +175,6 @@ const LoginPage = () => {
       </div>
     </section>
   );
-};
+}
 
 export default LoginPage;

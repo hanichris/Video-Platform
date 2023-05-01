@@ -23,7 +23,7 @@ module.exports = {
     },
     ecmaVersion: 2018,
     sourceType: 'module',
-    project: './tsconfig.json'
+    project: 'frontend/tsconfig.json'
   },
   plugins: ['jest', 'react', '@typescript-eslint'],
   settings: {
@@ -44,6 +44,7 @@ module.exports = {
     }
   },
   rules: {
+    quotes: [2, "single", { "avoidEscape": true }],
     'max-classes-per-file': 'off',
     'no-underscore-dangle': 'off',
     'no-console': 'off',

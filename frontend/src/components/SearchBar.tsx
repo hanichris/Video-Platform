@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { Link, useNavigate } from "react-router-dom";
-
+import { useState } from 'react';
+import styled from 'styled-components';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   position: sticky;
@@ -70,24 +69,19 @@ const Avatar = styled.img`
   background-color: #999;
 `;
 
-const SearchBar = () => {
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
+function SearchBar() {
+  const navigate = useNavigate();
+  const [q, setQ] = useState('');
   return (
-    <>
-      <Container>
+    <Container>
       <Search>
-            <Input
-              placeholder="Search"
-              onChange={(e) => setQ(e.target.value)}
-            />
-            <SearchOutlinedIcon onClick={()=>navigate(`/videos/search?q=${q}`)}/>
-          </Search>
-      </Container>
-      
-    </>
+        <Input placeholder="Search" onChange={(e) => setQ(e.target.value)} />
+        <SearchOutlinedIcon
+          onClick={() => navigate(`/videos/search?q=${q}`)}
+        />
+      </Search>
+    </Container>
   );
-};
+}
 
 export default SearchBar;

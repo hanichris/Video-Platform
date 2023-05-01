@@ -1,9 +1,10 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import useStore from "../store";
-import { IUser, IChannel } from "../utils/types";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import axios from 'axios';
+import useStore from '../store';
+import { IUser, IChannel } from '../utils/types';
 
 const Button = styled.button`
   border-radius: 3px;
@@ -17,22 +18,24 @@ const Button = styled.button`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const ProfilePage = () => {
+function ProfilePage() {
   const navigate = useNavigate();
   const store = useStore();
 
   const fetchUser = async () => {
     try {
       store.setRequestLoading(true);
-      const response = await fetch(`${SERVER_ENDPOINT}/users/me`, {
-        credentials: "include",
+      const response = await axios.get(`${SERVER_ENDPOINT}/users/me`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      if (!response.ok) {
-        throw await response.json();
+      if (response.status !== 200) {
+        throw response.statusText;
       }
 
-      const data = await response.json();
-      const user = data.data.user as IUser;
+      const user = response.data.user as IUser;
       // console.log(user);
       store.setRequestLoading(false);
 
@@ -43,24 +46,23 @@ const ProfilePage = () => {
       if (error.error) {
         error.error.forEach((err: any) => {
           toast.error(err.message, {
-            position: "top-right",
+            position: 'top-right',
           });
         });
         return;
       }
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
-      if (error?.message === "You are not logged in") {
-        navigate("/login");
+      if (error?.message === 'You are not logged in') {
+        navigate('/login');
       }
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -68,45 +70,43 @@ const ProfilePage = () => {
   const createChannel = async (data: any) => {
     try {
       store.setRequestLoading(true);
-      const response = await fetch(
+      const response = await axios.post(
         `${SERVER_ENDPOINT}/channels`,
+        JSON.stringify(data),
         {
-          method: "POST",
-          credentials: "include",
-          body: JSON.stringify(data),
+          withCredentials: true,
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        }
+        },
       );
-      if (!response.ok) {
-        throw await response.json();
+      if (response.status !== 200) {
+        throw response.statusText;
       }
 
-      toast.success("Channel created successfully", {
-        position: "top-right",
+      toast.success('Channel created successfully', {
+        position: 'top-right',
       });
       store.setRequestLoading(false);
-      navigate("/profile");
+      navigate('/profile');
     } catch (error: any) {
       store.setRequestLoading(false);
       if (error.error) {
         error.error.forEach((err: any) => {
           toast.error(err.message, {
-            position: "top-right",
+            position: 'top-right',
           });
         });
         return;
       }
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -128,21 +128,45 @@ const ProfilePage = () => {
             <div className="flex items-center gap-8">
               <div>
                 <img
-                  src={
-                    String(user.avatar)
-                  }
+                  src={String(user.avatar)}
                   className="max-h-36"
                   alt={`profile photo of ${user.username}`}
                 />
               </div>
               <div className="mt-8">
-                <p className="mb-3">ID: {user._id}</p>
-                <p className="mb-3">Username: {user.username}</p>
-                <p className="mb-3">Email: {user.email}</p>
-                <p className="mb-3">Subscriptions: {user.subscriptions.length}</p>
-                <p className="mb-3">Channels: {user.channels.length}</p>
-                <p className="mb-3">Default Channel: {user.channels.length > 0 ? (user.channels[0] as unknown as IUser)._id : ""}</p>
-                <p className="mb-3">Provider: {user.fromGoogle ? "Google" : "Default"}</p>
+                <p className="mb-3">
+                  ID:
+                  {user._id}
+                </p>
+                <p className="mb-3">
+                  Username:
+                  {user.username}
+                </p>
+                <p className="mb-3">
+                  Email:
+                  {user.email}
+                </p>
+                <p className="mb-3">
+                  Subscriptions:
+                  {' '}
+                  {user.subscriptions.length}
+                </p>
+                <p className="mb-3">
+                  Channels:
+                  {user.channels.length}
+                </p>
+                <p className="mb-3">
+                  Default Channel:
+                  {' '}
+                  {user.channels.length > 0
+                    ? (user.channels[0] as unknown as IUser)._id
+                    : ''}
+                </p>
+                <p className="mb-3">
+                  Provider:
+                  {' '}
+                  {user.fromGoogle ? 'Google' : 'Default'}
+                </p>
               </div>
               <div>
                 {/* <Button onClick={createChannel}>
@@ -155,6 +179,6 @@ const ProfilePage = () => {
       </div>
     </section>
   );
-};
+}
 
 export default ProfilePage;

@@ -1,21 +1,20 @@
-import { Link, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import useStore from "../store";
-import Spinner from "./Spinner";
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import useStore from '../store';
+import Spinner from './Spinner';
 
-const Header = () => {
+function Header() {
   const store = useStore();
+  const location = useLocation();
   const user = store.authUser;
   const navigate = useNavigate();
-  const [open, setOpen] = useState([]);
 
   const handleLogout = async () => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_SERVER_ENDPOINT;
       const response = await fetch(`${SERVER_ENDPOINT}/api/auth/logout`, {
-        credentials: "include",
+        credentials: 'include',
       });
       if (!response.ok) {
         throw await response.json();
@@ -23,22 +22,21 @@ const Header = () => {
 
       store.setRequestLoading(false);
       store.setAuthUser(null);
-      navigate("/login");
+      navigate('/login');
     } catch (error: any) {
       store.setRequestLoading(false);
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
-      if (error?.message === "You are not logged in") {
-        navigate("/login");
+      if (error?.message === 'You are not logged in') {
+        navigate('/login');
       }
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -61,12 +59,30 @@ const Header = () => {
             {!user && (
               <>
                 <li>
-                  <Link to="/login" className="text-ct-dark-600">
+                  <Link
+                    to="/login"
+                    state={{
+                      from: {
+                        pathname: location.pathname,
+                        search: location.search,
+                      },
+                    }}
+                    className="text-ct-dark-600"
+                  >
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register" className="text-ct-dark-600">
+                  <Link
+                    to="/register"
+                    state={{
+                      from: {
+                        pathname: location.pathname,
+                        search: location.search,
+                      },
+                    }}
+                    className="text-ct-dark-600"
+                  >
                     Register
                   </Link>
                 </li>
@@ -92,6 +108,6 @@ const Header = () => {
       </div>
     </>
   );
-};
+}
 
 export default Header;

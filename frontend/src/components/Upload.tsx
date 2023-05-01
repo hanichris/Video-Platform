@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import useStore from "../store";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import useStore from '../store';
 
 const Container = styled.div`
   width: 100%;
@@ -63,7 +63,7 @@ const Label = styled.label`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const Upload = ({channelId} : {channelId: string}) => {
+function Upload({ channelId }: { channelId: string }) {
   const [img, setImg] = useState(undefined);
   const [video, setVideo] = useState(undefined);
   const [imgPerc, setImgPerc] = useState(0);
@@ -71,62 +71,58 @@ const Upload = ({channelId} : {channelId: string}) => {
   const [inputs, setInputs] = useState({});
   const [tags, setTags] = useState([]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const store = useStore();
   const channel = store.currentChannel;
 
   const handleChange = (e: any) => {
-    setInputs((prev) => {
-      return { ...prev, [e.target.name]: e.target.value };
-    });
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleTags = (e: any) => {
-    setTags(e.target.value.split(","));
+    setTags(e.target.value.split(','));
   };
 
   const uploadFile = (file: File, urlType: string) => {
-    setInputs((prev) => {
-      return { ...prev, [urlType]: file };
-    });
+    setInputs((prev) => ({ ...prev, [urlType]: file }));
   };
 
   useEffect(() => {
-    video && uploadFile(video , "video");
+    video && uploadFile(video, 'video');
   }, [video]);
 
   // useEffect(() => {
   //   img && uploadFile(img, "imgUrl");
   // }, [img]);
 
-  const handleUpload = async (e: any)=>{
+  const handleUpload = async (e: any) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${SERVER_ENDPOINT}/channels/${channelId}/upload`, 
-                    {...inputs, tags},
-                    { 
-                      withCredentials: true,
-                      headers: {
-                        // 'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/multipart/form-data'
-                      }
-                    },
-                    )
-      res.status===200 && navigate(`/videos/${res.data._id}`)
+      const res = await axios.post(
+        `${SERVER_ENDPOINT}/channels/${channelId}/upload`,
+        { ...inputs, tags },
+        {
+          withCredentials: true,
+          headers: {
+            // 'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/multipart/form-data',
+          },
+        },
+      );
+      res.status === 200 && navigate(`/videos/${res.data._id}`);
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
-  }
+  };
 
   return (
     <Container>
@@ -134,7 +130,7 @@ const Upload = ({channelId} : {channelId: string}) => {
         <Title>Upload a New Video</Title>
         <Label>Video:</Label>
         {videoPerc > 0 ? (
-          "Uploading:" + videoPerc
+          `Uploading:${videoPerc}`
         ) : (
           <Input
             type="file"
@@ -173,6 +169,6 @@ const Upload = ({channelId} : {channelId: string}) => {
       </Wrapper>
     </Container>
   );
-};
+}
 
 export default Upload;

@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { IUser, IVideo, IChannel } from "../utils/types";
+import { create } from 'zustand';
+import { IUser, IVideo, IChannel } from '../utils/types';
 
 type Store = {
   authUser: IUser | null;
@@ -20,8 +20,7 @@ const useStore = create<Store>((set) => ({
   setAuthUser: (user) => set((state) => ({ ...state, authUser: user })),
   setCurrentVideo: (video) => set((state) => ({ ...state, currentVideo: video })),
   setCurrentChannel: (channel) => set((state) => ({ ...state, currentChannel: channel })),
-  setRequestLoading: (isLoading) =>
-    set((state) => ({ ...state, requestLoading: isLoading })),
+  setRequestLoading: (isLoading) => set((state) => ({ ...state, requestLoading: isLoading })),
 }));
 
 export default useStore;

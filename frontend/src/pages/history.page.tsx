@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import VideoCard from "../components/VideoCard";
-import axios from "axios";
-import {IVideo} from "../utils/types"
-import SearchBar from "../components/SearchBar"
-import useStore from "../store";
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import VideoCard from '../components/VideoCard';
+import { IVideo } from '../utils/types';
+import SearchBar from '../components/SearchBar';
+import useStore from '../store';
 
 const Container = styled.div`
   padding: 2em;
@@ -13,7 +13,7 @@ const Container = styled.div`
   flex-wrap: wrap;
 `;
 
-const HistoryPage = () => {
+function HistoryPage() {
   const store = useStore();
   const user = store.authUser;
   const [videos, setVideos] = useState([]);
@@ -21,7 +21,10 @@ const HistoryPage = () => {
   useEffect(() => {
     const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
     const fetchVideos = async () => {
-      const res = await axios.get(`${SERVER_ENDPOINT}/users/${user?._id}/history`, {withCredentials: true});
+      const res = await axios.get(
+        `${SERVER_ENDPOINT}/users/${user?._id}/history`,
+        { withCredentials: true },
+      );
       setVideos(res.data);
     };
     fetchVideos();
@@ -32,11 +35,11 @@ const HistoryPage = () => {
       <SearchBar />
       <Container>
         {videos.map((video: IVideo) => (
-          <VideoCard key={video._id} type={null} video={video}/>
+          <VideoCard key={video._id} type={null} video={video} />
         ))}
       </Container>
     </>
   );
-};
+}
 
 export default HistoryPage;

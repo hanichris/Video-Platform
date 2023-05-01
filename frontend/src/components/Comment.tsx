@@ -1,9 +1,9 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { IChannel, IComment } from "../utils/types";
-import {format} from "timeago.js";
-import useStore from "../store";
+import axios from 'axios';
+import { useEffect } from 'react';
+import styled from 'styled-components';
+import { format } from 'timeago.js';
+import { IComment } from '../utils/types';
+import useStore from '../store';
 
 const Container = styled.div`
   display: flex;
@@ -40,31 +40,21 @@ const Text = styled.span`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-const Comment = ({ videoId, comment }: {videoId: string, comment: IComment}) => {
+function Comment({
+  videoId,
+  comment,
+}: {
+  videoId: string;
+  comment: IComment;
+}) {
   const store = useStore();
   const user = store.authUser;
-  // const [channel, setChannel] = useState<IChannel>({
-  //   _id: "",
-  //   name: "",
-  //   description: "",
-  //   imgUrl: "",
-  //   views: 0,
-  //   tags: [],
-  //   likes: [],
-  //   dislikes: [],
-  //   videos: [],
-  //   subscribers: 0,
-  //   isPublic: false,
-  //   createdAt: ""
-  // });
 
   useEffect(() => {
-      const fetchComment = async () => {
-        const videoRes = await axios.get(`${SERVER_ENDPOINT}/videos/${videoId}`);
-        // const userRes = await axios.get(`${SERVER_ENDPOINT}/users/${videoRes.data.userId}`);
-        // setChannel(userRes.data)
-      };
-      fetchComment();
+    const fetchComment = async () => {
+      const videoRes = await axios.get(`${SERVER_ENDPOINT}/videos/${videoId}`);
+    };
+    fetchComment();
   }, [videoId]);
 
   return (
@@ -72,12 +62,15 @@ const Comment = ({ videoId, comment }: {videoId: string, comment: IComment}) => 
       <Avatar src={user?.avatar} />
       <Details>
         <Name>
-          {user?.username} • {format(comment.createdAt)}
+          {user?.username}
+          {' '}
+          •
+          {format(comment.createdAt)}
         </Name>
         <Text>{comment.description}</Text>
       </Details>
     </Container>
   );
-};
+}
 
 export default Comment;
