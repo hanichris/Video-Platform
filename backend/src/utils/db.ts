@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 class DBClient {
   constructor() {
@@ -10,12 +10,12 @@ class DBClient {
     mongoose
       .connect(String(process.env.DB_CONN_STRING))
       .then(() => {
-        console.log("🚀 Mongo Database connected successfully");
+        console.log('🚀 Mongo Database connected successfully');
       })
       .catch((err) => {
         throw err;
       });
-  };
+  }
 
   isAlive() {
     // 0: disconnected
@@ -27,7 +27,6 @@ class DBClient {
     }
     return false;
   }
-
 }
 
 const dbClient = new DBClient();

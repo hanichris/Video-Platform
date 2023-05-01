@@ -1,5 +1,5 @@
-import axios from "axios";
-import qs from "qs";
+import axios from 'axios';
+import qs from 'qs';
 
 // Oauth authentication
 
@@ -24,14 +24,14 @@ export const getGoogleOauthToken = async ({
 }: {
   code: string;
 }): Promise<GoogleOauthToken> => {
-  const rootURl = "https://oauth2.googleapis.com/token";
+  const rootURl = 'https://oauth2.googleapis.com/token';
 
   const options = {
     code,
     client_id: GOOGLE_OAUTH_CLIENT_ID,
     client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
     redirect_uri: GOOGLE_OAUTH_REDIRECT,
-    grant_type: "authorization_code",
+    grant_type: 'authorization_code',
   };
   try {
     const { data } = await axios.post<GoogleOauthToken>(
@@ -39,14 +39,14 @@ export const getGoogleOauthToken = async ({
       qs.stringify(options),
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-      }
+      },
     );
 
     return data;
   } catch (err: any) {
-    console.error("Failed to fetch Google Oauth Tokens");
+    console.error('Failed to fetch Google Oauth Tokens');
     throw new Error(err);
   }
 };
@@ -76,7 +76,7 @@ export async function getGoogleUser({
         headers: {
           Authorization: `Bearer ${id_token}`,
         },
-      }
+      },
     );
 
     return data;

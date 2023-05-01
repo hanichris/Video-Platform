@@ -37,6 +37,7 @@ module.exports = {
     }
   },
   rules: {
+    quotes: [2, "single", { "avoidEscape": true }],
     'no-console': 'off',
     'no-shadow': 'off',
     'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement']
