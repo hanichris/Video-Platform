@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import useStore from '../store';
 
 const Container = styled.div`
   width: 100%;
@@ -23,12 +22,7 @@ const Wrapper = styled.div`
   gap: 20px;
   position: relative;
 `;
-const Close = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-`;
+
 const Title = styled.h1`
   text-align: center;
 `;
@@ -64,16 +58,12 @@ const Label = styled.label`
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 function Upload({ channelId }: { channelId: string }) {
-  const [img, setImg] = useState(undefined);
+  // const [img, setImg] = useState(undefined);
   const [video, setVideo] = useState(undefined);
-  const [imgPerc, setImgPerc] = useState(0);
-  const [videoPerc, setVideoPerc] = useState(0);
   const [inputs, setInputs] = useState({});
   const [tags, setTags] = useState([]);
 
   const navigate = useNavigate();
-  const store = useStore();
-  const channel = store.currentChannel;
 
   const handleChange = (e: any) => {
     setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -88,7 +78,9 @@ function Upload({ channelId }: { channelId: string }) {
   };
 
   useEffect(() => {
-    video && uploadFile(video, 'video');
+    if (video) {
+      uploadFile(video, 'video');
+    }
   }, [video]);
 
   // useEffect(() => {
@@ -109,7 +101,9 @@ function Upload({ channelId }: { channelId: string }) {
           },
         },
       );
-      res.status === 200 && navigate(`/videos/${res.data._id}`);
+      if (res.status === 200) {
+        navigate(`/videos/${res.data._id}`);
+      }
     } catch (error: any) {
       console.log(error?.message);
       const resMessage = (error.response
@@ -129,15 +123,11 @@ function Upload({ channelId }: { channelId: string }) {
       <Wrapper>
         <Title>Upload a New Video</Title>
         <Label>Video:</Label>
-        {videoPerc > 0 ? (
-          `Uploading:${videoPerc}`
-        ) : (
-          <Input
-            type="file"
-            accept="video/*"
-            onChange={(e) => setVideo((e.target as any).files[0])}
-          />
-        )}
+        <Input
+          type="file"
+          accept="video/*"
+          onChange={(e) => setVideo((e.target as any).files[0])}
+        />
         <Input
           type="text"
           placeholder="Title"

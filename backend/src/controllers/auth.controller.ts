@@ -7,7 +7,6 @@ import {
   getGoogleOauthToken,
   getGoogleUser,
 } from '../services/session.service';
-import ChannelController from './channel.controller';
 import User from '../models/user.model';
 import createError from '../error';
 import { ChannelModel as Channel } from '../models/channel.model';
@@ -26,7 +25,7 @@ const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
 
 class AuthController {
   static async registerHandler(
-    req: Request<{}, {}, CreateUserInput>,
+    req: Request<object, object, CreateUserInput>,
     resp: Response,
     next: NextFunction,
   ) {
@@ -62,7 +61,7 @@ class AuthController {
       resp.cookie('auth_token', token, {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
       });
-      resp.status(201).json({
+      return resp.status(201).json({
         status: 'success',
         data: {
           user: exclude(user, ['password']),
@@ -75,12 +74,12 @@ class AuthController {
           message: 'Email already exist',
         });
       }
-      next(err);
+      return next(err);
     }
   }
 
   static async loginHandler(
-    req: Request<{}, {}, LoginUserInput>,
+    req: Request<object, object, LoginUserInput>,
     resp: Response,
     next: NextFunction,
   ) {
@@ -109,11 +108,11 @@ class AuthController {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
       });
 
-      resp.status(200).json({
+      return resp.status(200).json({
         status: 'success',
       });
     } catch (err: any) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -165,11 +164,11 @@ class AuthController {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         status: 'success',
       });
     } catch (err: any) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -188,16 +187,16 @@ class AuthController {
         });
       }
 
-      const { id_token, access_token } = await getGoogleOauthToken({ code });
+      const { idToken, accessToken } = await getGoogleOauthToken({ code });
 
       const {
-        name, verified_email, email, picture,
+        verifiedEmail, email, picture,
       } = await getGoogleUser({
-        id_token,
-        access_token,
+        idToken,
+        accessToken,
       });
 
-      if (!verified_email) {
+      if (!verifiedEmail) {
         return res.status(403).json({
           status: 'fail',
           message: 'Google account not verified',
@@ -223,6 +222,19 @@ class AuthController {
 
       if (!user) return res.redirect(`${FRONTEND_ENDPOINT}/oauth/error`);
 
+      // create default channel if one is not found
+      if (user.channels.length === 0) {
+        const channel = new Channel({
+          name: randomUUID(),
+          userId: user._id,
+          imgUrl: user.avatar,
+        });
+        if (!channel) return res.redirect(`${FRONTEND_ENDPOINT}/oauth/error`);
+        await channel.save();
+        user.channels.push(channel);
+        await user.save();
+      }
+
       const TOKEN_EXPIRES_IN = process.env
         .TOKEN_EXPIRES_IN as unknown as number;
       const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
@@ -234,7 +246,7 @@ class AuthController {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
       });
 
-      res.redirect(`${FRONTEND_ENDPOINT}${pathUrl}`);
+      return res.redirect(`${FRONTEND_ENDPOINT}${pathUrl}`);
     } catch (err: any) {
       console.log('Failed to authorize Google User', err);
       return res.redirect(`${FRONTEND_ENDPOINT}/oauth/error`);

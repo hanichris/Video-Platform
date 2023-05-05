@@ -13,9 +13,9 @@ class CommentController {
     });
     try {
       const savedComment = await newComment.save();
-      resp.status(200).send(savedComment);
+      return resp.status(200).send(savedComment);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -32,12 +32,11 @@ class CommentController {
           },
           { new: true },
         );
-        resp.status(200).json(updatedComment);
-      } else {
-        return next(createError(403, 'You can only update your comment!'));
+        return resp.status(200).json(updatedComment);
       }
+      return next(createError(403, 'You can only update your comment!'));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -48,21 +47,20 @@ class CommentController {
       const video = await Video.findById(req.params.id);
       if (userId === comment?.userId || userId === video?.userId) {
         await Comment.findByIdAndDelete(req.params.id);
-        resp.status(204).json('The comment has been deleted.');
-      } else {
-        return next(createError(403, 'You can only delete your comment!'));
+        return resp.status(204).json('The comment has been deleted.');
       }
+      return next(createError(403, 'You can only delete your comment!'));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
   static async getComments(req: Request, resp: Response, next: NextFunction) {
     try {
       const comments = await Comment.find({ videoId: req.params.videoId });
-      resp.status(200).json(comments);
+      return resp.status(200).json(comments);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

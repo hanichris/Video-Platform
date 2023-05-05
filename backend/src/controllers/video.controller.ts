@@ -1,4 +1,3 @@
-import mime from 'mime-types';
 import { NextFunction, Request, Response } from 'express';
 import User from '../models/user.model';
 import Video from '../models/video.model';
@@ -8,12 +7,12 @@ class VideoController {
   static async setPublic(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id);
     if (!userId) {
-      return resp.status(401).json({ error: 'Unauthorized' });
+      return next(createError(401, 'Unauthorized'));
     }
     const video = await Video.findById(req.params.id);
     if (!video) {
       console.error('Video was not found!!!');
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     const updatedVideo = await Video.findByIdAndUpdate(
       req.params.id,
@@ -23,7 +22,7 @@ class VideoController {
       { new: true },
     );
     if (!updatedVideo?.isModified) {
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     return resp.status(200).json(updatedVideo);
   }
@@ -31,12 +30,12 @@ class VideoController {
   static async setPrivate(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id);
     if (!userId) {
-      return resp.status(401).json({ error: 'Unauthorized' });
+      return next(createError(401, 'Unauthorized'));
     }
     const video = await Video.findById(req.params.id);
     if (!video) {
       console.error('Video was not found!!!');
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     const updatedVideo = await Video.findByIdAndUpdate(
       req.params.id,
@@ -46,51 +45,50 @@ class VideoController {
       { new: true },
     );
     if (!updatedVideo?.isModified) {
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     return resp.status(200).json(updatedVideo);
   }
 
   static async addTag(req: Request, resp: Response, next: NextFunction) {
     if (!req?.body?.tags) {
-      return resp.status(404).json({ error: 'No tag found' });
+      return next(createError(404, 'No tag found'));
     }
     const userId = String(resp.locals.user._id);
     if (!userId) {
-      return resp.status(401).json({ error: 'Unauthorized' });
+      return next(createError(401, 'Unauthorized'));
     }
     const video = await Video.findById(req.params.id);
     if (!video) {
-      console.error('Video was not found!!!');
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     const updatedVideo = await Video.findByIdAndUpdate(req.params.id, {
       $addToSet: { tags: req.body.tag },
     });
     if (!updatedVideo?.isModified) {
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     return resp.status(200).json(updatedVideo);
   }
 
   static async removeTag(req: Request, resp: Response, next: NextFunction) {
     if (!req?.body?.tags) {
-      return resp.status(404).json({ error: 'No tag found' });
+      return next(createError(404, 'No tag found'));
     }
     const userId = String(resp.locals.user._id);
     if (!userId) {
-      return resp.status(401).json({ error: 'Unauthorized' });
+      return next(createError(401, 'Unauthorized'));
     }
     const video = await Video.findById(req.params.id);
     if (!video) {
       console.error('Video was not found!!!');
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     const updatedVideo = await Video.findByIdAndUpdate(req.params.id, {
       $pull: { tags: req.body.tag },
     });
     if (!updatedVideo?.isModified) {
-      return resp.status(404).json({ error: 'Video not found' });
+      return next(createError(404, 'Video not found'));
     }
     return resp.status(200).json(updatedVideo);
   }
@@ -108,12 +106,11 @@ class VideoController {
           },
           { new: true },
         );
-        resp.status(200).json(updatedVideo);
-      } else {
-        return next(createError(403, 'You can only update your video!'));
+        return resp.status(200).json(updatedVideo);
       }
+      return next(createError(403, 'You can only update your video!'));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -124,12 +121,11 @@ class VideoController {
       if (!video) return next(createError(404, 'Video not found!'));
       if (userId === video.userId) {
         await Video.findByIdAndDelete(req.params.id);
-        resp.status(200).json('The video has been deleted.');
-      } else {
-        return next(createError(403, 'You can only delete your video!'));
+        return resp.status(200).json('The video has been deleted.');
       }
+      return next(createError(403, 'You can only delete your video!'));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -139,9 +135,9 @@ class VideoController {
       if (!video) {
         return next(createError(404, 'Video not found!'));
       }
-      resp.status(200).json(video);
+      return resp.status(200).json(video);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -160,9 +156,9 @@ class VideoController {
           user.save();
         }
       }
-      resp.status(200).json('The view has been increased.');
+      return resp.status(200).json('The view has been increased.');
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -170,9 +166,9 @@ class VideoController {
     try {
       const videos = await Video.aggregate([{ $sample: { size: 20 } }]);
       if (!videos) return next(createError(404, 'Videos not found!'));
-      resp.status(200).json(videos);
+      return resp.status(200).json(videos);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -180,9 +176,9 @@ class VideoController {
     try {
       const videos = await Video.find().sort({ views: -1 });
       if (!videos) return next(createError(404, 'Videos not found!'));
-      resp.status(200).json(videos);
+      return resp.status(200).json(videos);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -194,9 +190,9 @@ class VideoController {
     try {
       const videos = await Video.find({ tags: { $in: tags } }).limit(20);
       if (!videos) return next(createError(404, 'Videos not found!'));
-      resp.status(200).json(videos);
+      return resp.status(200).json(videos);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -207,9 +203,9 @@ class VideoController {
         title: { $regex: query, $options: 'i' },
       }).limit(20);
       if (!videos) return next(createError(404, 'Videos not found!'));
-      resp.status(200).json(videos);
+      return resp.status(200).json(videos);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

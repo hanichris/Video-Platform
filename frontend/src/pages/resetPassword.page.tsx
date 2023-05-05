@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { object, string, TypeOf } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,15 +20,13 @@ const resetPasswordModel = object({
   message: 'Passwords do not match',
 });
 
-export type resetPasswordInput = TypeOf<typeof resetPasswordModel>;
+export type ResetPasswordInput = TypeOf<typeof resetPasswordModel>;
 
 function ResetPasswordPage() {
-  const location = useLocation();
   const navigate = useNavigate();
   const store = useStore();
-  const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
-  const resetUserPassword = async (data: resetPasswordInput) => {
+  const resetUserPassword = async (data: ResetPasswordInput) => {
     try {
       store.setRequestLoading(true);
       const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
@@ -43,9 +41,8 @@ function ResetPasswordPage() {
         },
       );
       if (response.status !== 200) {
-        throw response.statusText;
+        throw new Error(response.statusText);
       }
-
       store.setRequestLoading(false);
       navigate('/login');
     } catch (error: any) {
@@ -70,18 +67,17 @@ function ResetPasswordPage() {
     }
   };
 
-  const methods = useForm<resetPasswordInput>({
+  const methods = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordModel),
   });
 
   const {
-    reset,
     handleSubmit,
     register,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = methods;
 
-  const onSubmitHandler: SubmitHandler<resetPasswordInput> = (values) => {
+  const onSubmitHandler: SubmitHandler<ResetPasswordInput> = (values) => {
     resetUserPassword(values);
   };
 

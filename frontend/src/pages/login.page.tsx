@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import useStore from '../store';
-import { getGoogleUrl } from '../utils/getGoogleUrl';
+import getGoogleUrl from '../utils/getGoogleUrl';
 import GoogleLogo from '../assets/google.svg';
 
 const loginUserModel = object({
@@ -42,7 +42,7 @@ function LoginPage() {
         },
       );
       if (response.status !== 200) {
-        throw response.statusText;
+        throw new Error(response.statusText);
       }
 
       store.setRequestLoading(false);
@@ -74,10 +74,9 @@ function LoginPage() {
   });
 
   const {
-    reset,
     handleSubmit,
     register,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = methods;
 
   const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
@@ -120,16 +119,16 @@ function LoginPage() {
 
             <div className="flex justify-between items-center mb-6">
               <div className="form-group form-check">
-                <input
-                  title="remeber-checkbox"
-                  type="checkbox"
-                  className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                  id="exampleCheck3"
-                />
                 <label
+                  htmlFor="rememberCheck"
                   className="form-check-label inline-block text-gray-800"
-                  htmlFor="exampleCheck2"
                 >
+                  <input
+                    title="remeber-checkbox"
+                    type="checkbox"
+                    className="form-check-input appearance-none h-4 w-4 border  border-gray-300 rounded-sm bg-white checked:bg-blue-600  checked:border-blue-600 focus:outline-none transition  duration-200 mt-1 align-top bg-no-repeat bg-center   bg-contain float-left mr-2 cursor-pointer"
+                    id="rememberCheck"
+                  />
                   Remember me
                 </label>
               </div>

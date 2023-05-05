@@ -1,0 +1,7 @@
+./.eslintrc.cjs
+*.config.cjs
+*.config.mjs
+*.config.js
+*.config.ts
+dist/
+node_modules/

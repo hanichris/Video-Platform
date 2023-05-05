@@ -35,7 +35,7 @@ function HistoryPage() {
       <SearchBar />
       <Container>
         {videos.map((video: IVideo) => (
-          <VideoCard key={video._id} type={null} video={video} />
+          <VideoCard key={video._id} video={video} />
         ))}
       </Container>
     </>

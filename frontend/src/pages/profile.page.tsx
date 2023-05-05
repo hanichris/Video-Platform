@@ -1,20 +1,20 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import styled from 'styled-components';
+// import styled from 'styled-components';
 import axios from 'axios';
 import useStore from '../store';
 import { IUser, IChannel } from '../utils/types';
 
-const Button = styled.button`
-  border-radius: 3px;
-  border: 1px;
-  padding: 10px 20px;
-  font-weight: 500;
-  cursor: pointer;
-  background-color: #cc1a00;
-  color: white;
-`;
+// const Button = styled.button`
+//   border-radius: 3px;
+//   border: 1px;
+//   padding: 10px 20px;
+//   font-weight: 500;
+//   cursor: pointer;
+//   background-color: #cc1a00;
+//   color: white;
+// `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
@@ -32,7 +32,7 @@ function ProfilePage() {
         },
       });
       if (response.status !== 200) {
-        throw response.statusText;
+        throw new Error(response.statusText);
       }
 
       const user = response.data.user as IUser;
@@ -67,49 +67,49 @@ function ProfilePage() {
     }
   };
 
-  const createChannel = async (data: any) => {
-    try {
-      store.setRequestLoading(true);
-      const response = await axios.post(
-        `${SERVER_ENDPOINT}/channels`,
-        JSON.stringify(data),
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      if (response.status !== 200) {
-        throw response.statusText;
-      }
+  // const createChannel = async (data: any) => {
+  //   try {
+  //     store.setRequestLoading(true);
+  //     const response = await axios.post(
+  //       `${SERVER_ENDPOINT}/channels`,
+  //       JSON.stringify(data),
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       },
+  //     );
+  //     if (response.status !== 200) {
+  //       throw response.statusText;
+  //     }
 
-      toast.success('Channel created successfully', {
-        position: 'top-right',
-      });
-      store.setRequestLoading(false);
-      navigate('/profile');
-    } catch (error: any) {
-      store.setRequestLoading(false);
-      if (error.error) {
-        error.error.forEach((err: any) => {
-          toast.error(err.message, {
-            position: 'top-right',
-          });
-        });
-        return;
-      }
-      const resMessage = (error.response
-          && error.response.data
-          && error.response.data.message)
-        || error.message
-        || error.toString();
+  //     toast.success('Channel created successfully', {
+  //       position: 'top-right',
+  //     });
+  //     store.setRequestLoading(false);
+  //     navigate('/profile');
+  //   } catch (error: any) {
+  //     store.setRequestLoading(false);
+  //     if (error.error) {
+  //       error.error.forEach((err: any) => {
+  //         toast.error(err.message, {
+  //           position: 'top-right',
+  //         });
+  //       });
+  //       return;
+  //     }
+  //     const resMessage = (error.response
+  //         && error.response.data
+  //         && error.response.data.message)
+  //       || error.message
+  //       || error.toString();
 
-      toast.error(resMessage, {
-        position: 'top-right',
-      });
-    }
-  };
+  //     toast.error(resMessage, {
+  //       position: 'top-right',
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     fetchUser();
@@ -130,7 +130,7 @@ function ProfilePage() {
                 <img
                   src={String(user.avatar)}
                   className="max-h-36"
-                  alt={`profile photo of ${user.username}`}
+                  alt={`profile of ${user.username}`}
                 />
               </div>
               <div className="mt-8">

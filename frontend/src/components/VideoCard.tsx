@@ -56,7 +56,7 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-function VideoCard({ type, video }: { type: any; video: IVideo }) {
+function VideoCard({ video }: { video: IVideo }) {
   const store = useStore();
   const [channel, setChannel] = useState<IChannel>({
     _id: '',

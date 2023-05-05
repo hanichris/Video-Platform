@@ -4,7 +4,7 @@ import { exclude } from '../controllers/auth.controller';
 import User from '../models/user.model';
 
 // Get token from request header or from cookie to authenticate user
-export const getAuthToken = async (
+const getAuthToken = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -15,6 +15,7 @@ export const getAuthToken = async (
       req.headers.authorization
       && req.headers.authorization.startsWith('Bearer')
     ) {
+      /* eslint prefer-destructuring: ["error", {AssignmentExpression: {array: false}}] */
       token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies.auth_token) {
       token = req.cookies.auth_token;
@@ -44,8 +45,10 @@ export const getAuthToken = async (
     }
 
     res.locals.user = exclude(user, ['password', 'history', 'subscriptions']);
-    next();
+    return next();
   } catch (err: any) {
-    next(err);
+    return next(err);
   }
 };
+
+export default getAuthToken;

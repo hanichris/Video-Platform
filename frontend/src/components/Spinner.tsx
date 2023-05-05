@@ -1,3 +1,5 @@
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/function-component-definition */
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 

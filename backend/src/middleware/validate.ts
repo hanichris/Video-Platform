@@ -1,7 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { AnyZodObject, ZodError } from 'zod';
 
-export const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
+const validate = (
+  schema: AnyZodObject,
+) => (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     schema.parse({
       params: req.params,
@@ -9,7 +15,7 @@ export const validate = (schema: AnyZodObject) => (req: Request, res: Response, 
       body: req.body,
     });
 
-    next();
+    return next();
   } catch (err: any) {
     if (err instanceof ZodError) {
       return res.status(400).json({
@@ -17,6 +23,8 @@ export const validate = (schema: AnyZodObject) => (req: Request, res: Response, 
         error: err.errors,
       });
     }
-    next(err);
+    return next(err);
   }
 };
+
+export default validate;

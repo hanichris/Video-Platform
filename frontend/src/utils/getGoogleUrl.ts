@@ -1,4 +1,4 @@
-export const getGoogleUrl = (from: string) => {
+const getGoogleUrl = (from: string) => {
   const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
 
   const options = {
@@ -18,3 +18,5 @@ export const getGoogleUrl = (from: string) => {
 
   return `${rootUrl}?${qs.toString()}`;
 };
+
+export default getGoogleUrl;

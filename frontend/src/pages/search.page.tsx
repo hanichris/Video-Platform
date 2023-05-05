@@ -33,7 +33,7 @@ function SearchPage() {
       <SearchBar />
       <Container>
         {videos.map((video) => (
-          <VideoCard key={video._id} type={null} video={video} />
+          <VideoCard key={video._id} video={video} />
         ))}
       </Container>
     </>

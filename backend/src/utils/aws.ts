@@ -11,4 +11,4 @@ const s3Config: S3ClientConfig = {
   },
 };
 
-export { s3Config };
+export default s3Config;

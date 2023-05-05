@@ -182,7 +182,9 @@ function VideoPage() {
         store.setAuthUser(userRes.data);
         store.setCurrentVideo(videoRes.data);
         store.setCurrentChannel(channelRes.data);
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchData();
   }, [id]);
@@ -242,21 +244,23 @@ function VideoPage() {
 
   const handleSub = async () => {
     try {
-      currentUser.subscriptions.includes(currentChannel?._id)
-        ? await axios.put(
+      if (currentUser.subscriptions.includes(currentChannel?._id)) {
+        await axios.put(
           `${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel?._id}`,
           {},
           {
             withCredentials: true,
           },
-        )
-        : await axios.put(
+        );
+      } else {
+        await axios.put(
           `${SERVER_ENDPOINT}/users/subscribe/${currentChannel?._id}`,
           {},
           {
             withCredentials: true,
           },
         );
+      }
     } catch (error: any) {
       console.log(error?.message);
       const resMessage = (error.response
@@ -396,7 +400,7 @@ function VideoPage() {
           </Subscribe>
         </Channel>
         <Hr />
-        <Comments videoId={id!} />
+        <Comments videoId={id} />
       </Content>
       <Recommendation tags={currentVideo.tags} />
     </Container>

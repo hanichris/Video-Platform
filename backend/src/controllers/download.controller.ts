@@ -1,10 +1,10 @@
+/* eslint-disable consistent-return */
 import { NextFunction, Request, Response } from 'express';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import createError from '../error';
 import Video from '../models/video.model';
-import User from '../models/user.model';
-import { s3Config } from '../utils/aws';
+import s3Config from '../utils/aws';
 
 const s3: S3 = new S3(s3Config);
 

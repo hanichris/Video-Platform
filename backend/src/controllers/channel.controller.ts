@@ -5,7 +5,7 @@ import Video from '../models/video.model';
 import { ChannelModel as Channel } from '../models/channel.model';
 import createError from '../error';
 
-const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
+// const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
 const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as unknown as string;
 
 class ChannelController {
@@ -28,9 +28,9 @@ class ChannelController {
       await channel.save();
       user.channels.push(channel);
       await user.save();
-      resp.status(200).json(channel);
+      return resp.status(200).json(channel);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -38,7 +38,7 @@ class ChannelController {
     const userId = String(resp.locals.user._id);
     const user = await User.findById(userId);
     if (!user) {
-      return resp.status(401).json({ error: 'User not found' });
+      return next(createError(401, 'User not found!'));
     }
     const ownedChannel = user.channels.filter(
       (channel) => channel?._id?.toString() === req.params.id,
@@ -52,9 +52,9 @@ class ChannelController {
           },
           { new: true },
         );
-        resp.status(200).json(updatedChannel);
+        return resp.status(200).json(updatedChannel);
       } catch (err) {
-        next(err);
+        return next(err);
       }
     } else {
       return next(createError(403, 'You can only update your channel!'));
@@ -70,9 +70,9 @@ class ChannelController {
     if (channel.userId === userId) {
       try {
         await Channel.findByIdAndDelete(req.params.id);
-        resp.status(200).json('Channel has been deleted.');
+        return resp.status(200).json('Channel has been deleted.');
       } catch (err) {
-        next(err);
+        return next(err);
       }
     } else {
       return next(createError(403, 'You can only delete your channel!'));
@@ -106,9 +106,9 @@ class ChannelController {
       const savedVideo = await newVideo.save();
       channel.videos.push(savedVideo.id);
       channel.save();
-      resp.status(201).json(savedVideo);
+      return resp.status(201).json(savedVideo);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -118,9 +118,9 @@ class ChannelController {
       if (!channels) {
         return next(createError(404, 'No Channels found!'));
       }
-      resp.status(200).json(channels);
+      return resp.status(200).json(channels);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -130,9 +130,9 @@ class ChannelController {
       if (!channel) {
         return next(createError(404, 'Channel not found!'));
       }
-      resp.status(200).json(channel);
+      return resp.status(200).json(channel);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -143,9 +143,9 @@ class ChannelController {
         name: { $regex: query, $options: 'i' },
       }).limit(20);
       if (!channels) return next(createError(404, 'Channels not found!'));
-      resp.status(200).json(channels);
+      return resp.status(200).json(channels);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

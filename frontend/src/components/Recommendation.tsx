@@ -25,7 +25,7 @@ function Recommendation({ tags }: { tags: Array<string> }) {
   return (
     <Container>
       {videos.map((video: IVideo) => (
-        <VideoCard type="sm" key={video._id} video={video} />
+        <VideoCard key={video._id} video={video} />
       ))}
     </Container>
   );

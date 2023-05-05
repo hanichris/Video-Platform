@@ -1,8 +1,6 @@
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Comment from './Comment';
 import { IComment } from '../utils/types';
@@ -43,8 +41,7 @@ const Button = styled.button`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-function Comments({ videoId }: { videoId: string }) {
-  const navigate = useNavigate();
+function Comments({ videoId }: { videoId: string | undefined }) {
   const store = useStore();
   const [newcomment, setNewComment] = useState<string>();
   const [comments, setComments] = useState<Array<IComment>>([]);
@@ -57,7 +54,9 @@ function Comments({ videoId }: { videoId: string }) {
           `${SERVER_ENDPOINT}/comments/${videoId}`,
         );
         setComments(commentRes.data);
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchComments();
   }, [videoId]);
@@ -101,9 +100,5 @@ function Comments({ videoId }: { videoId: string }) {
     </Container>
   );
 }
-
-Comments.propTypes = {
-  videoId: PropTypes.string,
-};
 
 export default Comments;

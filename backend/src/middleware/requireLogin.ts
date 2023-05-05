@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 // Read from the local response object to get the stored user json data
 // for endpoints that require a logged in user
-export const requireLogin = (
+const requireLogin = (
   req: Request,
   resp: Response,
   next: NextFunction,
@@ -15,8 +15,10 @@ export const requireLogin = (
         message: 'Invalid token or session has expired',
       });
     }
-    next();
+    return next();
   } catch (err: any) {
-    next(err);
+    return next(err);
   }
 };
+
+export default requireLogin;

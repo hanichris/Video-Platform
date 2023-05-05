@@ -8,7 +8,7 @@ module.exports = {
   extends: [
     'airbnb-base',
     'airbnb-typescript/base',
-    'plugin:jest/all',
+    'plugin:jest/recommended',
     'plugin:@typescript-eslint/recommended'
   ],
   globals: {
@@ -19,25 +19,38 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
-    project: './tsconfig.json'
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname
   },
   plugins: ['jest', '@typescript-eslint'],
   settings: {
-    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+    'import/extensions': ['.js', '.ts'],
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
+      '@typescript-eslint/parser': ['.ts']
     },
     'import/resolver': {
       typescript: {
         directory: './tsconfig.json'
       },
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx']
+        extensions: ['.js', '.ts']
       }
     }
   },
   rules: {
-    quotes: [2, "single", { "avoidEscape": true }],
+    quotes: [2, 'single', { avoidEscape: true }],
+    semi: [2, 'always'],
+    'no-underscore-dangle': 'off',
+    '@typescript-eslint/no-explicit-any': ['off'],
+    'import/extensions': [
+      2,
+      'ignorePackages',
+      {
+        '': 'never',
+        js: 'never',
+        ts: 'never'
+      }
+    ],
     'no-console': 'off',
     'no-shadow': 'off',
     'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement']

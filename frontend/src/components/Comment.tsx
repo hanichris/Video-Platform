@@ -40,19 +40,13 @@ const Text = styled.span`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-function Comment({
-  videoId,
-  comment,
-}: {
-  videoId: string;
-  comment: IComment;
-}) {
+function Comment({ videoId, comment }: { videoId: string | undefined; comment: IComment }) {
   const store = useStore();
   const user = store.authUser;
 
   useEffect(() => {
     const fetchComment = async () => {
-      const videoRes = await axios.get(`${SERVER_ENDPOINT}/videos/${videoId}`);
+      await axios.get(`${SERVER_ENDPOINT}/videos/${videoId}`);
     };
     fetchComment();
   }, [videoId]);
@@ -65,7 +59,7 @@ function Comment({
           {user?.username}
           {' '}
           •
-          {format(comment.createdAt)}
+          <Date>{format(comment.createdAt)}</Date>
         </Name>
         <Text>{comment.description}</Text>
       </Details>

@@ -29,7 +29,7 @@ function HomePage() {
       <SearchBar />
       <Container>
         {videos.map((video: IVideo) => (
-          <VideoCard key={video._id} type="sm" video={video} />
+          <VideoCard key={video._id} video={video} />
         ))}
       </Container>
     </>

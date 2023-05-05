@@ -9,14 +9,14 @@ class UserController {
   static async getMeHandler(req: Request, res: Response, next: NextFunction) {
     try {
       const user = exclude(res.locals.user, ['password']);
-      res.status(200).json({
+      return res.status(200).json({
         status: 'success',
         data: {
           user: exclude(user, ['password']),
         },
       });
     } catch (err: any) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -32,9 +32,9 @@ class UserController {
           },
           { new: true },
         );
-        resp.status(200).json(updatedUser);
+        return resp.status(200).json(updatedUser);
       } catch (err) {
-        next(err);
+        return next(err);
       }
     } else {
       return next(createError(403, 'You can only update your account!'));
@@ -46,9 +46,9 @@ class UserController {
     if (req.params.id === userId) {
       try {
         await User.findByIdAndDelete(userId);
-        resp.status(200).json('User has been deleted.');
+        return resp.status(200).json('User has been deleted.');
       } catch (err) {
-        next(err);
+        return next(err);
       }
     } else {
       return next(createError(403, 'You can only delete your account!'));
@@ -59,9 +59,9 @@ class UserController {
     const userId = String(req.params.id);
     try {
       const user = await User.findById(userId);
-      resp.status(200).json(user);
+      return resp.status(200).json(user);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -74,9 +74,9 @@ class UserController {
       await Channel.findByIdAndUpdate(req.params.channelId, {
         $inc: { subscribers: 1 },
       });
-      resp.status(200).json('Subscription successfull.');
+      return resp.status(200).json('Subscription successfull.');
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -89,9 +89,9 @@ class UserController {
       await Channel.findByIdAndUpdate(req.params.channelId, {
         $inc: { subscribers: -1 },
       });
-      resp.status(200).json('Unsubscription successfull.');
+      return resp.status(200).json('Unsubscription successfull.');
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -104,9 +104,9 @@ class UserController {
         $addToSet: { likes: userId },
         $pull: { dislikes: userId },
       });
-      resp.status(200).json('The video has been liked.');
+      return resp.status(200).json('The video has been liked.');
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -118,9 +118,9 @@ class UserController {
         $addToSet: { dislikes: userId },
         $pull: { likes: userId },
       });
-      resp.status(200).json('The video has been disliked.');
+      return resp.status(200).json('The video has been disliked.');
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -141,11 +141,11 @@ class UserController {
         subscribedChannels.map(async (channelId: any) => Channel.findById(channelId)),
       );
       if (!list) return next(createError(404, 'Channels not found!'));
-      resp
+      return resp
         .status(200)
         .json(list.flat().sort((a: any, b: any) => b.createdAt - a.createdAt));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -161,11 +161,11 @@ class UserController {
         watchedVideos.map(async (videoId) => Video.findById(videoId)),
       );
 
-      resp
+      return resp
         .status(200)
         .json(list.flat().sort((a: any, b: any) => b.updatedAt - a.updatedAt));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -173,9 +173,9 @@ class UserController {
     try {
       const users = await User.find({});
       if (!users) return next(createError(404, 'No Users found!'));
-      resp.status(200).json(users);
+      return resp.status(200).json(users);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

@@ -4,7 +4,7 @@ import { object, string, TypeOf } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { getGoogleUrl } from '../utils/getGoogleUrl';
+import getGoogleUrl from '../utils/getGoogleUrl';
 import GoogleLogo from '../assets/google.svg';
 import useStore from '../store';
 
@@ -47,7 +47,7 @@ function RegisterPage() {
         },
       );
       if (response.status !== 200) {
-        throw response.statusText;
+        throw new Error(response.statusText);
       }
 
       toast.success('Account created successfully', {
@@ -82,10 +82,9 @@ function RegisterPage() {
   });
 
   const {
-    reset,
     handleSubmit,
     register,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = methods;
 
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {

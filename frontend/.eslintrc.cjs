@@ -7,8 +7,9 @@ module.exports = {
   extends: [
     'airbnb',
     'airbnb-typescript',
-    'plugin:jest/all',
+    'plugin:jest/recommended',
     'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
     'plugin:@typescript-eslint/recommended'
   ],
   globals: {
@@ -23,7 +24,8 @@ module.exports = {
     },
     ecmaVersion: 2018,
     sourceType: 'module',
-    project: 'frontend/tsconfig.json'
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname
   },
   plugins: ['jest', 'react', '@typescript-eslint'],
   settings: {
@@ -44,7 +46,21 @@ module.exports = {
     }
   },
   rules: {
-    quotes: [2, "single", { "avoidEscape": true }],
+    quotes: [2, 'single', { avoidEscape: true }],
+    semi: [2, 'always'],
+    'react/jsx-props-no-spreading': 'off',
+    '@typescript-eslint/no-explicit-any': ['off'],
+    'import/extensions': [
+      2,
+      'ignorePackages',
+      {
+        '': 'never',
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never'
+      }
+    ],
     'max-classes-per-file': 'off',
     'no-underscore-dangle': 'off',
     'no-console': 'off',
@@ -57,7 +73,7 @@ module.exports = {
   overrides: [
     {
       files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
-      excludedFiles: ['babel.config.js', 'vite.config.ts']
+      excludedFiles: ['./babel.config.mjs', './vite.config.ts']
     }
   ]
 };

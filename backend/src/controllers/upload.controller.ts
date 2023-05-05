@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { Upload } from '@aws-sdk/lib-storage';
 import { NextFunction, Request, Response } from 'express';
 import { S3 } from '@aws-sdk/client-s3';
@@ -8,7 +9,7 @@ import createError from '../error';
 import Video from '../models/video.model';
 import User from '../models/user.model';
 import { ChannelModel as Channel } from '../models/channel.model';
-import { s3Config } from '../utils/aws';
+import s3Config from '../utils/aws';
 
 config();
 
@@ -37,7 +38,8 @@ class UploadController {
           // A Multer error occurred when uploading.
           console.error(err);
           return next(createError(400, 'Error uploading video file!'));
-        } if (err) {
+        }
+        if (err) {
           // An unknown error occurred when uploading.
           console.error(err);
           return next(createError(500, 'Failed to upload video file!'));

@@ -6,7 +6,7 @@ class DBClient {
     dotenv.config();
   }
 
-  connect() {
+  static connect() {
     mongoose
       .connect(String(process.env.DB_CONN_STRING))
       .then(() => {
@@ -17,7 +17,7 @@ class DBClient {
       });
   }
 
-  isAlive() {
+  static isAlive() {
     // 0: disconnected
     // 1: connected
     // 2: connecting
