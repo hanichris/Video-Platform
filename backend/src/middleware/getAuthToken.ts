@@ -44,7 +44,7 @@ const getAuthToken = async (
       });
     }
 
-    res.locals.user = exclude(user, ['password', 'history', 'subscriptions']);
+    res.locals.user = exclude(user._doc, ['password']);
     return next();
   } catch (err: any) {
     return next(err);

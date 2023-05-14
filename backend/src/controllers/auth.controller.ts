@@ -15,10 +15,11 @@ function exclude<User, Key extends keyof User>(
   user: User,
   keys: Key[],
 ): Omit<User, Key> {
+  const modifiedUser = { ...user };
   for (const key of keys) {
-    delete user[key];
+    delete modifiedUser[key];
   }
-  return user;
+  return modifiedUser;
 }
 
 const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
@@ -57,10 +58,15 @@ class AuthController {
       const TOKEN_EXPIRES_IN = process.env
         .TOKEN_EXPIRES_IN as unknown as number;
       const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
-      const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
+      const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
+        expiresIn: `${TOKEN_EXPIRES_IN}m`,
+      });
+
       resp.cookie('auth_token', token, {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
+        httpOnly: true,
       });
+
       return resp.status(201).json({
         status: 'success',
         data: {
@@ -102,10 +108,13 @@ class AuthController {
       const TOKEN_EXPIRES_IN = process.env
         .TOKEN_EXPIRES_IN as unknown as number;
       const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
-      const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
+      const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
+        expiresIn: `${TOKEN_EXPIRES_IN}m`,
+      });
 
       resp.cookie('auth_token', token, {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
+        httpOnly: true,
       });
 
       return resp.status(200).json({
@@ -158,10 +167,13 @@ class AuthController {
       const TOKEN_EXPIRES_IN = process.env
         .TOKEN_EXPIRES_IN as unknown as number;
       const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
-      const token = jwt.sign({ sub: user.id }, TOKEN_SECRET);
+      const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
+        expiresIn: `${TOKEN_EXPIRES_IN}m`,
+      });
 
       res.cookie('auth_token', token, {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
+        httpOnly: true,
       });
 
       return res.status(200).json({
@@ -186,17 +198,18 @@ class AuthController {
           message: 'Authorization code not provided!',
         });
       }
-
-      const { idToken, accessToken } = await getGoogleOauthToken({ code });
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { id_token, access_token } = await getGoogleOauthToken({ code });
 
       const {
-        verifiedEmail, email, picture,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        verified_email, email, picture,
       } = await getGoogleUser({
-        idToken,
-        accessToken,
+        id_token,
+        access_token,
       });
 
-      if (!verifiedEmail) {
+      if (!verified_email) {
         return res.status(403).json({
           status: 'fail',
           message: 'Google account not verified',
@@ -205,6 +218,7 @@ class AuthController {
 
       const user = await User.findOneAndUpdate(
         { email },
+
         {
           createdAt: new Date(),
           username: email,
@@ -244,6 +258,7 @@ class AuthController {
 
       res.cookie('auth_token', token, {
         expires: new Date(Date.now() + TOKEN_EXPIRES_IN * 60 * 1000),
+        httpOnly: true,
       });
 
       return res.redirect(`${FRONTEND_ENDPOINT}${pathUrl}`);
