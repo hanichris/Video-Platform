@@ -1,7 +1,7 @@
 import express from 'express';
 import UserController from '../controllers/user.controller';
-import { getAuthToken } from '../middleware/getAuthToken';
-import { requireLogin } from '../middleware/requireLogin';
+import getAuthToken from '../middleware/getAuthToken';
+import requireLogin from '../middleware/requireLogin';
 
 const router = express.Router();
 
@@ -56,6 +56,14 @@ router.get(
   requireLogin,
   UserController.getSubscriptions,
 ); // GET /users/:id/subscriptions
+
+// Add a video to history
+router.put(
+  '/history/:videoId',
+  getAuthToken,
+  requireLogin,
+  UserController.addHistory,
+); // PUT /users/history/:videoId
 
 // Get user watched views history
 router.get(

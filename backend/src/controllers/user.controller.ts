@@ -8,11 +8,11 @@ import { exclude } from './auth.controller';
 class UserController {
   static async getMeHandler(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = exclude(res.locals.user, ['password']);
+      const { user } = res.locals;
       return res.status(200).json({
         status: 'success',
         data: {
-          user: exclude(user, ['password']),
+          user: exclude(user, ['subcriptions', 'history']),
         },
       });
     } catch (err: any) {
@@ -22,7 +22,6 @@ class UserController {
 
   static async updateUser(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id);
-    console.log(userId);
     if (req.params.id === userId) {
       try {
         const updatedUser = await User.findByIdAndUpdate(
@@ -69,10 +68,10 @@ class UserController {
     const userId = String(resp.locals.user._id);
     try {
       await User.findByIdAndUpdate(userId, {
-        $push: { subscriptions: req.params.channelId },
+        $addToSet: { subscriptions: req.params.channelId },
       });
       await Channel.findByIdAndUpdate(req.params.channelId, {
-        $inc: { subscribers: 1 },
+        $addToSet: { subscribers: userId },
       });
       return resp.status(200).json('Subscription successfull.');
     } catch (err) {
@@ -87,7 +86,7 @@ class UserController {
         $pull: { subscriptions: req.params.channelId },
       });
       await Channel.findByIdAndUpdate(req.params.channelId, {
-        $inc: { subscribers: -1 },
+        $pull: { subscribers: userId },
       });
       return resp.status(200).json('Unsubscription successfull.');
     } catch (err) {
@@ -97,7 +96,6 @@ class UserController {
 
   static async like(req: Request, resp: Response, next: NextFunction) {
     const userId = String(resp.locals.user._id);
-    console.log(userId);
     const { videoId } = req.params;
     try {
       await Video.findByIdAndUpdate(videoId, {
@@ -136,7 +134,6 @@ class UserController {
         return next(createError(403, 'You are not logged in!'));
       }
       const subscribedChannels = user.subscriptions;
-
       const list = await Promise.all(
         subscribedChannels.map(async (channelId: any) => Channel.findById(channelId)),
       );
@@ -144,6 +141,18 @@ class UserController {
       return resp
         .status(200)
         .json(list.flat().sort((a: any, b: any) => b.createdAt - a.createdAt));
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  static async addHistory(req: Request, resp: Response, next: NextFunction) {
+    const userId = String(resp.locals.user._id);
+    try {
+      await User.findByIdAndUpdate(String(userId), {
+        $addToSet: { history: req.params.videoId },
+      });
+      return resp.status(200).json('The video has been added to history.');
     } catch (err) {
       return next(err);
     }
