@@ -1,8 +1,8 @@
 import express from 'express';
 import ChannelController from '../controllers/channel.controller';
 import UploadController from '../controllers/upload.controller';
-import { getAuthToken } from '../middleware/getAuthToken';
-import { requireLogin } from '../middleware/requireLogin';
+import getAuthToken from '../middleware/getAuthToken';
+import requireLogin from '../middleware/requireLogin';
 
 const router = express.Router();
 

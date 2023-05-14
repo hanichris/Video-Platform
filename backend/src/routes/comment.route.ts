@@ -1,7 +1,7 @@
 import express from 'express';
 import CommentController from '../controllers/comment.controller';
-import { getAuthToken } from '../middleware/getAuthToken';
-import { requireLogin } from '../middleware/requireLogin';
+import getAuthToken from '../middleware/getAuthToken';
+import requireLogin from '../middleware/requireLogin';
 
 const router = express.Router();
 

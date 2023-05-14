@@ -1,8 +1,8 @@
 import express from 'express';
 import { AuthController } from '../controllers/auth.controller';
-import { requireLogin } from '../middleware/requireLogin';
-import { getAuthToken } from '../middleware/getAuthToken';
-import { validate } from '../middleware/validate';
+import requireLogin from '../middleware/requireLogin';
+import getAuthToken from '../middleware/getAuthToken';
+import validate from '../middleware/validate';
 import {
   registerUserModel,
   loginUserModel,

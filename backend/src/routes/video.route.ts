@@ -2,8 +2,8 @@ import express from 'express';
 import VideoController from '../controllers/video.controller';
 import DownloadController from '../controllers/download.controller';
 import StreamController from '../controllers/stream.controller';
-import { getAuthToken } from '../middleware/getAuthToken';
-import { requireLogin } from '../middleware/requireLogin';
+import getAuthToken from '../middleware/getAuthToken';
+import requireLogin from '../middleware/requireLogin';
 
 const router = express.Router();
 
@@ -14,8 +14,8 @@ router.get('/', VideoController.getRandom); // GET /videos
 router.get('/trending', VideoController.getTrending); // GET /videos/trending
 router.get('/tags', VideoController.getByTag); // GET /videos/tags
 router.get('/search', VideoController.search); // GET /videos/search
-router.get('/:id/view', VideoController.getVideo); // GET /videos/:id
-router.put('/:id/view', VideoController.addView); // PUT /videos/:id
+router.get('/:id/view', VideoController.getVideo); // GET /videos/:id/view
+router.put('/:id/view', VideoController.addView); // PUT /videos/:id/view
 router.put(
   '/:id/edit',
   getAuthToken,
