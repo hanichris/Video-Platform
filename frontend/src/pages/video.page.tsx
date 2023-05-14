@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
@@ -11,7 +11,6 @@ import axios from 'axios';
 import { format } from 'timeago.js';
 import { toast } from 'react-toastify';
 import Recommendation from '../components/Recommendation';
-import { IChannel, IUser, IVideo } from '../utils/types';
 import useStore from '../store';
 import Comments from '../components/Comments';
 
@@ -123,71 +122,33 @@ function VideoPage() {
   const store = useStore();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [currentChannel, setChannel] = useState<IChannel>({
-    _id: '',
-    name: '',
-    description: '',
-    imgUrl: '',
-    views: 0,
-    tags: [],
-    likes: [],
-    dislikes: [],
-    videos: [],
-    subscribers: 0,
-    isPublic: false,
-    createdAt: '',
-  });
-  const [currentUser, setUser] = useState<IUser>({
-    _id: '',
-    username: '',
-    email: '',
-    avatar: '',
-    subscriptions: [],
-    history: [],
-    channels: [],
-    fromGoogle: false,
-  });
-  const [currentVideo, setVideo] = useState<IVideo>({
-    _id: '',
-    userId: '',
-    channelId: '',
-    title: '',
-    description: '',
-    imgUrl: '',
-    videoUrl: '',
-    views: 0,
-    tags: [],
-    likes: [],
-    dislikes: [],
-    isPublic: false,
-    createdAt: '',
-  });
-
+  const currentChannel = useStore((state) => state.currentChannel);
+  const currentVideo = useStore((state) => state.currentVideo);
+  const authUser = useStore((state) => state.authUser);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const videoRes = await axios.get(
           `${SERVER_ENDPOINT}/videos/${id}/view`,
-        );
-        const channelRes = await axios.get(
-          `${SERVER_ENDPOINT}/channels/${videoRes.data.channelId}/view`,
-        );
-        const userRes = await axios.get(
-          `${SERVER_ENDPOINT}/users/${channelRes.data.userId}`,
-          { withCredentials: true },
-        );
-        setUser(userRes.data);
-        setChannel(channelRes.data);
-        setVideo(videoRes.data);
-        store.setAuthUser(userRes.data);
-        store.setCurrentVideo(videoRes.data);
-        store.setCurrentChannel(channelRes.data);
+        )
+          .then((data: any) => {
+            store.setCurrentVideo(data.data);
+            return data.data;
+          });
+
+        await axios.get(
+          `${SERVER_ENDPOINT}/channels/${videoRes.channelId}/view`,
+        )
+          .then((data: any) => {
+            store.setCurrentChannel(data.data);
+            return data.data;
+          });
       } catch (err) {
         console.error(err);
       }
     };
     fetchData();
-  }, [id]);
+  }, []);
 
   const handleLike = async () => {
     try {
@@ -244,9 +205,12 @@ function VideoPage() {
 
   const handleSub = async () => {
     try {
-      if (currentUser.subscriptions.includes(currentChannel?._id)) {
+      if (!currentChannel || !currentChannel._id) {
+        throw new Error('Channel not found!');
+      }
+      if (authUser?.subscriptions.includes(currentChannel._id)) {
         await axios.put(
-          `${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel?._id}`,
+          `${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel._id}`,
           {},
           {
             withCredentials: true,
@@ -254,7 +218,7 @@ function VideoPage() {
         );
       } else {
         await axios.put(
-          `${SERVER_ENDPOINT}/users/subscribe/${currentChannel?._id}`,
+          `${SERVER_ENDPOINT}/users/subscribe/${currentChannel._id}`,
           {},
           {
             withCredentials: true,
@@ -282,6 +246,15 @@ function VideoPage() {
   const handlePlay = async () => {
     try {
       await axios.put(`${SERVER_ENDPOINT}/videos/${id}/view`);
+      if (authUser) {
+        await axios.put(
+          `${SERVER_ENDPOINT}/users/history/${id}`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+      }
     } catch (error: any) {
       console.log(error?.message);
       const resMessage = (error.response
@@ -327,7 +300,7 @@ function VideoPage() {
 
   // TODO share functionality
   const handleShare = async () => {};
-  console.log(store.authUser);
+  // console.log(store.authUser);
   return (
     <Container>
       <Content>
@@ -338,26 +311,26 @@ function VideoPage() {
             controls
           />
         </VideoWrapper>
-        <Title>{currentVideo.title}</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
           <Info>
-            {currentVideo.views}
+            {currentVideo?.views}
             {' '}
             views •
-            {format(currentVideo.createdAt)}
+            {format(String(currentVideo?.createdAt))}
           </Info>
           <Buttons>
             <Button onClick={handleLike}>
-              {currentVideo.likes?.includes(currentUser?._id) ? (
+              {currentVideo?.likes?.includes(String(authUser?._id)) ? (
                 <ThumbUpIcon />
               ) : (
                 <ThumbUpOutlinedIcon />
               )}
               {' '}
-              {currentVideo.likes?.length}
+              {currentVideo?.likes?.length}
             </Button>
             <Button onClick={handleDislike}>
-              {currentVideo.dislikes?.includes(currentUser?._id) ? (
+              {currentVideo?.dislikes?.includes(String(authUser?._id)) ? (
                 <ThumbDownIcon />
               ) : (
                 <ThumbDownOffAltOutlinedIcon />
@@ -380,21 +353,24 @@ function VideoPage() {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src={currentChannel.imgUrl} />
+            <Image src={currentChannel?.imgUrl} />
             <ChannelDetail>
-              <ChannelName>{currentChannel.name}</ChannelName>
+              <ChannelName>{currentChannel?.name}</ChannelName>
               <ChannelCounter>
-                {currentChannel.subscribers > 0
-                  ? currentChannel.subscribers
-                  : 0}
+                {
+                  currentChannel?.subscribers
+                  && currentChannel?.subscribers > 0
+                    ? currentChannel?.subscribers
+                    : 0
+                }
                 {' '}
                 subscribers
               </ChannelCounter>
-              <Description>{currentVideo.description}</Description>
+              <Description>{currentVideo?.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
           <Subscribe onClick={handleSub}>
-            {currentUser.subscriptions?.includes(currentChannel._id)
+            {authUser?.subscriptions?.includes(String(currentChannel?._id))
               ? 'UNSUBSCRIBE'
               : 'SUBSCRIBE'}
           </Subscribe>
@@ -402,7 +378,11 @@ function VideoPage() {
         <Hr />
         <Comments videoId={id} />
       </Content>
-      <Recommendation tags={currentVideo.tags} />
+      {
+        currentVideo?.tags
+          ? <Recommendation tags={Array.from(currentVideo?.tags)} />
+          : null
+      }
     </Container>
   );
 }

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 // import styled from 'styled-components';
 import axios from 'axios';
 import useStore from '../store';
-import { IUser, IChannel } from '../utils/types';
+import { IChannel } from '../utils/types';
 
 // const Button = styled.button`
 //   border-radius: 3px;
@@ -25,22 +25,23 @@ function ProfilePage() {
   const fetchUser = async () => {
     try {
       store.setRequestLoading(true);
-      const response = await axios.get(`${SERVER_ENDPOINT}/users/me`, {
+      await axios.get(`${SERVER_ENDPOINT}/users/me`, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      if (response.status !== 200) {
-        throw new Error(response.statusText);
-      }
-
-      const user = response.data.user as IUser;
-      // console.log(user);
+      })
+        .then((data) => {
+          if (data.status !== 200) {
+            throw new Error(data.statusText);
+          }
+          const { user } = data.data.data as any;
+          store.setAuthUser(user);
+          store.setCurrentChannel(user.channels[0] as unknown as IChannel);
+          return user;
+        });
       store.setRequestLoading(false);
-
-      store.setAuthUser(user);
-      store.setCurrentChannel(user.channels[0] as unknown as IChannel);
+      return;
     } catch (error: any) {
       store.setRequestLoading(false);
       if (error.error) {
@@ -115,7 +116,7 @@ function ProfilePage() {
     fetchUser();
   }, []);
 
-  const user = store.authUser;
+  const user = useStore((state) => state.authUser);
 
   return (
     <section className="bg-ct-blue-600  min-h-screen pt-20">
@@ -149,7 +150,7 @@ function ProfilePage() {
                 <p className="mb-3">
                   Subscriptions:
                   {' '}
-                  {user.subscriptions.length}
+                  {user?.subscriptions.length}
                 </p>
                 <p className="mb-3">
                   Channels:
@@ -159,7 +160,7 @@ function ProfilePage() {
                   Default Channel:
                   {' '}
                   {user.channels.length > 0
-                    ? (user.channels[0] as unknown as IUser)._id
+                    ? (user.channels[0] as unknown as IChannel)._id
                     : ''}
                 </p>
                 <p className="mb-3">

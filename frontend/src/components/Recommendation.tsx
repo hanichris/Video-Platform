@@ -20,7 +20,7 @@ function Recommendation({ tags }: { tags: Array<string> }) {
       setVideos(res.data);
     };
     fetchVideos();
-  }, [tags]);
+  }, []);
 
   return (
     <Container>

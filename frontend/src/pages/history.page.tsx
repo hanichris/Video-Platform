@@ -14,18 +14,19 @@ const Container = styled.div`
 `;
 
 function HistoryPage() {
-  const store = useStore();
-  const user = store.authUser;
+  const user = useStore((state) => state.authUser);
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
     const fetchVideos = async () => {
-      const res = await axios.get(
+      await axios.get(
         `${SERVER_ENDPOINT}/users/${user?._id}/history`,
         { withCredentials: true },
-      );
-      setVideos(res.data);
+      )
+        .then((data) => {
+          setVideos(data.data);
+        });
     };
     fetchVideos();
   }, []);

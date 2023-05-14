@@ -14,18 +14,19 @@ const Container = styled.div`
 `;
 
 function SubscriptionsPage() {
-  const store = useStore();
-  const user = store.authUser;
+  const user = useStore((state) => state.authUser);
   const [channels, setChannels] = useState([]);
 
   useEffect(() => {
     const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
     const fetchVideos = async () => {
-      const res = await axios.get(
+      await axios.get(
         `${SERVER_ENDPOINT}/users/${user?._id}/subscriptions`,
         { withCredentials: true },
-      );
-      setChannels(res.data);
+      )
+        .then((data) => {
+          setChannels(data.data);
+        });
     };
     fetchVideos();
   }, []);

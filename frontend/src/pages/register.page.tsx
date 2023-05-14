@@ -31,7 +31,7 @@ function RegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const store = useStore();
-  const from = ((location.state as any)?.from.pathname as string) || '/profile';
+  const from = ((location.state as any)?.from?.pathname as string) || '/profile';
 
   const registerUser = async (data: RegisterInput) => {
     try {
@@ -46,7 +46,8 @@ function RegisterPage() {
           },
         },
       );
-      if (response.status !== 200) {
+      console.log(response.status);
+      if (response.status !== 201) {
         throw new Error(response.statusText);
       }
 

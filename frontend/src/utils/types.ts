@@ -11,6 +11,7 @@ export interface IUser {
 
 export interface IChannel {
   _id: string;
+  userId: string;
   name: string;
   description: string;
   imgUrl: string;
