@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import User from '../models/user.model';
 import Video from '../models/video.model';
 import createError from '../error';
 
@@ -148,13 +147,6 @@ class VideoController {
       });
       if (!video) {
         return next(createError(404, 'Video not found!'));
-      }
-      if (resp?.locals?.user?._id) {
-        const user = await User.findById(String(resp.locals.user._id));
-        if (user) {
-          user.history.push(video.id);
-          user.save();
-        }
       }
       return resp.status(200).json('The view has been increased.');
     } catch (err) {
