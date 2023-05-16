@@ -2,21 +2,22 @@
   "name": "video-platform-backend",
   "private": true,
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev-server": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev-worker": "ts-node-dev --respawn --transpile-only src/worker.ts",
+    "dev": "concurrently \"npm run dev-*\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx  --fix",
     "check-lint": "eslint . --ext .js,.jsx,.ts,.tsx ",
     "fmt": "prettier --write .",
     "check-fmt": "prettier --check .",
     "semifix": "semistandard --fix .",
     "check-semi": "semistandard .",
-    "start-server": "nodemon --exec babel-node --presets @babel/preset-env src/server.ts",
-    "start-worker": "nodemon --exec babel-node --presets @babel/preset-env src/worker.ts",
-    "test-types": "tsc --incremental --noEmit",
-    "test": "./node_modules/.bin/mocha --require @babel/register --exit",
-    "full-test": "./node_modules/.bin/eslint *.js *.ts && jest"
+    "start-server": "nodemon --exec babel-node --presets @babel/preset-typescript ./dist/server.js",
+    "start-worker": "nodemon --exec babel-node --presets @babel/preset-typescript ./dist/worker.js",
+    "start": "concurrently \"npm run start-*\"",
+    "build": "tsc --incremental",
+    "test": "mocha --require @babel/register --exit"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",
@@ -32,7 +33,6 @@
     "@types/fluent-ffmpeg": "^2.1.21",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/mime-types": "^2.1.1",
-    "@types/morgan": "^1.9.4",
     "@types/multer": "^1.4.7",
     "@types/node": "^18.11.18",
     "@types/qs": "^6.9.7",
@@ -60,6 +60,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@types/morgan": "^1.9.4",
     "@aws-sdk/client-s3": "^3.327.0",
     "@aws-sdk/lib-storage": "^3.312.0",
     "aws-sdk": "^2.1359.0",
@@ -76,7 +77,6 @@
     "image-thumbnail": "^1.0.15",
     "jsonwebtoken": "^9.0.0",
     "mime-type": "^4.0.0",
-    "mongodb": "^5.2.0",
     "mongoose": "^7.0.3",
     "multer": "^1.4.5-lts.1",
     "qs": "^6.11.0",

@@ -12,7 +12,8 @@
     "fmt": "prettier --write .",
     "check-fmt": "prettier --check .",
     "semifix": "semistandard --fix .",
-    "check-semi": "semistandard ."
+    "check-semi": "semistandard .",
+    "test": "mocha --require @babel/register --exit"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",

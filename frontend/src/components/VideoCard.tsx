@@ -60,6 +60,7 @@ function VideoCard({ video }: { video: IVideo }) {
   const store = useStore();
   const [channel, setChannel] = useState<IChannel>({
     _id: '',
+    userId: '',
     name: '',
     description: '',
     imgUrl: '',
