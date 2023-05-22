@@ -10,11 +10,12 @@ const s3: S3 = new S3(s3Config);
 
 class DownloadController {
   static async downloadVideo(req: Request, resp: Response, next: NextFunction) {
-    const video = await Video.findById(req.params.id);
-    if (!video) {
-      return next(createError(404, 'Video not found!'));
-    }
     try {
+      const video = await Video.findById(req.params.id);
+      if (!video) {
+        return next(createError(404, 'Video not found!'));
+      }
+
       // Get Video Metadata from AWS S3 Bucket
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,

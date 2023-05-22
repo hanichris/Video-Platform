@@ -12,7 +12,7 @@ class UserController {
       return res.status(200).json({
         status: 'success',
         data: {
-          user: exclude(user, ['subcriptions', 'history']),
+          user: exclude(user, ['subscriptions', 'history']),
         },
       });
     } catch (err: any) {

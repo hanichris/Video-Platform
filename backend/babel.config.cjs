@@ -1,10 +1,10 @@
 module.exports = {
   presets: [
     [
-      '@babel/preset-typescript',
+      "@babel/preset-typescript",
       {
         targets: {
-          node: 'current',
+          node: "current",
         },
       },
     ],

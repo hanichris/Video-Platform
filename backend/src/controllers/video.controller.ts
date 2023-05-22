@@ -10,7 +10,6 @@ class VideoController {
     }
     const video = await Video.findById(req.params.id);
     if (!video) {
-      console.error('Video was not found!!!');
       return next(createError(404, 'Video not found'));
     }
     const updatedVideo = await Video.findByIdAndUpdate(
@@ -20,7 +19,7 @@ class VideoController {
       },
       { new: true },
     );
-    if (!updatedVideo?.isModified) {
+    if (!updatedVideo || !updatedVideo?.isModified) {
       return next(createError(404, 'Video not found'));
     }
     return resp.status(200).json(updatedVideo);
@@ -33,7 +32,6 @@ class VideoController {
     }
     const video = await Video.findById(req.params.id);
     if (!video) {
-      console.error('Video was not found!!!');
       return next(createError(404, 'Video not found'));
     }
     const updatedVideo = await Video.findByIdAndUpdate(
@@ -43,7 +41,7 @@ class VideoController {
       },
       { new: true },
     );
-    if (!updatedVideo?.isModified) {
+    if (!updatedVideo || !updatedVideo?.isModified) {
       return next(createError(404, 'Video not found'));
     }
     return resp.status(200).json(updatedVideo);

@@ -47,7 +47,7 @@ class CommentController {
       const video = await Video.findById(req.params.id);
       if (userId === comment?.userId || userId === video?.userId) {
         await Comment.findByIdAndDelete(req.params.id);
-        return resp.status(204).json('The comment has been deleted.');
+        return resp.status(204).send('The comment has been deleted.');
       }
       return next(createError(403, 'You can only delete your comment!'));
     } catch (err) {

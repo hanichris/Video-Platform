@@ -22,7 +22,7 @@ function exclude<User, Key extends keyof User>(
   return modifiedUser;
 }
 
-const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
+const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as string;
 
 class AuthController {
   static async registerHandler(
@@ -162,11 +162,10 @@ class AuthController {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(req.body.password, salt);
       user.password = hash;
-      user.save();
+      await user.save();
 
-      const TOKEN_EXPIRES_IN = process.env
-        .TOKEN_EXPIRES_IN as unknown as number;
-      const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
+      const TOKEN_EXPIRES_IN = Number(process.env.TOKEN_EXPIRES_IN);
+      const TOKEN_SECRET = process.env.JWT_SECRET as string;
       const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
         expiresIn: `${TOKEN_EXPIRES_IN}m`,
       });
@@ -185,8 +184,7 @@ class AuthController {
   }
 
   static async googleOauthHandler(req: Request, res: Response) {
-    const FRONTEND_ENDPOINT = process.env
-      .FRONTEND_ENDPOINT as unknown as string;
+    const FRONTEND_ENDPOINT = process.env.FRONTEND_ENDPOINT as string;
 
     try {
       const code = req.query.code as string;
@@ -203,7 +201,9 @@ class AuthController {
 
       const {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        verified_email, email, picture,
+        verified_email,
+        email,
+        picture,
       } = await getGoogleUser({
         id_token,
         access_token,
@@ -249,9 +249,8 @@ class AuthController {
         await user.save();
       }
 
-      const TOKEN_EXPIRES_IN = process.env
-        .TOKEN_EXPIRES_IN as unknown as number;
-      const TOKEN_SECRET = process.env.JWT_SECRET as unknown as string;
+      const TOKEN_EXPIRES_IN = Number(process.env.TOKEN_EXPIRES_IN);
+      const TOKEN_SECRET = process.env.JWT_SECRET as string;
       const token = jwt.sign({ sub: user.id }, TOKEN_SECRET, {
         expiresIn: `${TOKEN_EXPIRES_IN}m`,
       });

@@ -5,8 +5,7 @@ import Video from '../models/video.model';
 import { ChannelModel as Channel } from '../models/channel.model';
 import createError from '../error';
 
-// const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR as unknown as string;
-const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as unknown as string;
+const DEFAULT_THUMBNAIL = process.env.DEFAULT_THUMBNAIL as string;
 
 class ChannelController {
   static async createChannel(req: Request, resp: Response, next: NextFunction) {

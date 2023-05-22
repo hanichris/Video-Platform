@@ -1,5 +1,6 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable consistent-return */
+import os from 'os';
 import { NextFunction, Request, Response } from 'express';
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import ffmpeg from 'fluent-ffmpeg';
@@ -11,14 +12,14 @@ import createError from '../error';
 
 config();
 
+// Set the path to the ffmpeg binary based on the operating system
+const ffmpegPath = os.platform() === 'win32'
+  ? 'C:\\ProgramData\\chocolatey\\bin\\ffmpeg.exe'
+  : '/usr/bin/ffmpeg';
+
+ffmpeg.setFfmpegPath(ffmpegPath);
+
 const s3: S3 = new S3(s3Config);
-// Set the path to the ffmpeg binary
-
-// linux
-// ffmpeg.setFfmpegPath('/usr/bin/ffmpeg');
-
-// Windows
-ffmpeg.setFfmpegPath('C:\\ProgramData\\chocolatey\\bin\\ffmpeg.exe');
 
 class StreamingController {
   static async getStream(req: Request, resp: Response, next: NextFunction) {
@@ -39,7 +40,8 @@ class StreamingController {
       resp.set('Content-Type', 'video/mp4');
       resp.set('Transfer-Encoding', 'chunked');
 
-      let totalTime: number;
+      let totalTime = 0; // Initialize totalTime
+
       // Stream the video
       ffmpeg(stream)
         // set the size
@@ -74,7 +76,7 @@ class StreamingController {
 
           // AND HERE IS THE CALCULATION
           const percent = (time / totalTime) * 100;
-          console.log(`Processing: ${percent >= 0 ? (0 | percent) : 0}% done`);
+          console.log(`Processing: ${percent >= 0 ? 0 | percent : 0}% done`);
         })
         .pipe(resp, { end: true });
     } catch (e) {
