@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import { Request, Response, NextFunction } from 'express';
@@ -5,7 +6,6 @@ import sinon from 'sinon';
 import CommentController from '../../src/controllers/comment.controller';
 import Comment from '../../src/models/comment.model';
 import Video from '../../src/models/video.model';
-import createError from '../../src/error';
 
 describe('CommentController', () => {
   describe('createComment', () => {
@@ -13,20 +13,18 @@ describe('CommentController', () => {
       const req: Partial<Request> = {
         body: { text: 'This is a comment' },
         params: { videoId: 'video-id' },
-      };
+      } as unknown as Request<any, object, any>;
       const resp: Partial<Response> = {
         status: sinon.stub().returnsThis(),
         send: sinon.stub(),
-      };
-      const next: NextFunction = sinon.stub();
+      } as unknown as Response;
+      const next: NextFunction = sinon.stub() as unknown as NextFunction;
 
-      sinon
-        .stub(Comment.prototype, 'save')
-        .resolves({
-          text: 'This is a comment',
-          userId: 'user-id',
-          videoId: 'video-id',
-        });
+      sinon.stub(Comment.prototype, 'save').resolves({
+        text: 'This is a comment',
+        userId: 'user-id',
+        videoId: 'video-id',
+      });
 
       await CommentController.createComment(
         req as Request,
@@ -34,12 +32,14 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(resp.status).to.be.calledWith(200);
-      expect(resp.send).to.be.calledWith({
-        text: 'This is a comment',
-        userId: 'user-id',
-        videoId: 'video-id',
-      });
+      expect((resp.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect(
+        (resp.send as sinon.SinonStub).calledWith({
+          text: 'This is a comment',
+          userId: 'user-id',
+          videoId: 'video-id',
+        }),
+      ).to.be.true;
 
       sinon.restore();
     });
@@ -52,7 +52,7 @@ describe('CommentController', () => {
       const resp: Partial<Response> = {
         status: sinon.stub().returnsThis(),
       };
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       sinon
         .stub(Comment.prototype, 'save')
@@ -64,7 +64,7 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(next).to.be.calledWith(sinon.match.instanceOf(Error));
+      expect(next.calledWith(sinon.match.instanceOf(Error))).to.be.true;
 
       sinon.restore();
     });
@@ -80,7 +80,7 @@ describe('CommentController', () => {
         status: sinon.stub().returnsThis(),
         json: sinon.stub(),
       };
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const comment = new Comment({
         text: 'Old comment',
@@ -91,13 +91,11 @@ describe('CommentController', () => {
 
       sinon.stub(Comment, 'findById').resolves(comment);
       sinon.stub(Video, 'findById').resolves(video);
-      sinon
-        .stub(Comment, 'findByIdAndUpdate')
-        .resolves({
-          text: 'Updated comment',
-          userId: 'user-id',
-          videoId: 'video-id',
-        });
+      sinon.stub(Comment, 'findByIdAndUpdate').resolves({
+        text: 'Updated comment',
+        userId: 'user-id',
+        videoId: 'video-id',
+      });
 
       await CommentController.updateComment(
         req as Request,
@@ -105,12 +103,14 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(resp.status).to.be.calledWith(200);
-      expect(resp.json).to.be.calledWith({
-        text: 'Updated comment',
-        userId: 'user-id',
-        videoId: 'video-id',
-      });
+      expect((resp.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect(
+        (resp.json as sinon.SinonStub).calledWith({
+          text: 'Updated comment',
+          userId: 'user-id',
+          videoId: 'video-id',
+        }),
+      ).to.be.true;
 
       sinon.restore();
     });
@@ -121,7 +121,7 @@ describe('CommentController', () => {
         params: { id: 'comment-id' },
       };
       const resp: Partial<Response> = {};
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const comment = new Comment({
         text: 'Old comment',
@@ -139,7 +139,7 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(next).to.be.calledWith(sinon.match.instanceOf(Error));
+      expect(next.calledWith(sinon.match.instanceOf(Error))).to.be.true;
 
       sinon.restore();
     });
@@ -150,7 +150,7 @@ describe('CommentController', () => {
         params: { id: 'comment-id' },
       };
       const resp: Partial<Response> = {};
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       sinon
         .stub(Comment, 'findById')
@@ -162,7 +162,7 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(next).to.be.calledWith(sinon.match.instanceOf(Error));
+      expect(next.calledWith(sinon.match.instanceOf(Error))).to.be.true;
 
       sinon.restore();
     });
@@ -177,7 +177,7 @@ describe('CommentController', () => {
         status: sinon.stub().returnsThis(),
         send: sinon.stub(),
       };
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const comment = new Comment({ userId: 'user-id', videoId: 'video-id' });
       const video = new Video({ userId: 'user-id' });
@@ -192,8 +192,8 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(resp.status).to.be.calledWith(204);
-      expect(resp.send).to.be.called;
+      expect((resp.status as sinon.SinonStub).calledWith(204)).to.be.true;
+      expect((resp.send as sinon.SinonStub).called).to.be.true;
 
       sinon.restore();
     });
@@ -203,7 +203,7 @@ describe('CommentController', () => {
         params: { id: 'comment-id' },
       };
       const resp: Partial<Response> = {};
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const comment = new Comment({ userId: 'user-id', videoId: 'video-id' });
       const video = new Video({ userId: 'other-user-id' });
@@ -217,7 +217,7 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(next).to.be.calledWith(sinon.match.instanceOf(Error));
+      expect(next.calledWith(sinon.match.instanceOf(Error))).to.be.true;
 
       sinon.restore();
     });
@@ -227,7 +227,7 @@ describe('CommentController', () => {
         params: { id: 'comment-id' },
       };
       const resp: Partial<Response> = {};
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       sinon
         .stub(Comment, 'findById')
@@ -239,7 +239,7 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(next).to.be.calledWith(sinon.match.instanceOf(Error));
+      expect(next.calledWith(sinon.match.instanceOf(Error))).to.be.true;
 
       sinon.restore();
     });
@@ -254,7 +254,7 @@ describe('CommentController', () => {
         status: sinon.stub().returnsThis(),
         json: sinon.stub(),
       };
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const comments = [
         { text: 'Comment 1', userId: 'user-id', videoId: 'video-id' },
@@ -269,8 +269,8 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(resp.status).to.be.calledWith(200);
-      expect(resp.json).to.be.calledWith(comments);
+      expect((resp.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect((resp.json as sinon.SinonStub).calledWith(comments)).to.be.true;
 
       sinon.restore();
     });
@@ -280,7 +280,7 @@ describe('CommentController', () => {
         params: { videoId: 'video-id' },
       };
       const resp: Partial<Response> = {};
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       sinon.stub(Comment, 'find').rejects(new Error('Failed to get comments'));
 
@@ -290,7 +290,7 @@ describe('CommentController', () => {
         next,
       );
 
-      expect(next).to.be.calledWith(sinon.match.instanceOf(Error));
+      expect(next.calledWith(sinon.match.instanceOf(Error))).to.be.true;
 
       sinon.restore();
     });

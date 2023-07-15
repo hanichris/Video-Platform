@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Request, Response, NextFunction } from 'express';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -12,22 +13,22 @@ describe('DownloadController', () => {
     it('should download the video successfully', async () => {
       const req: Request = { params: { id: 'videoId' } } as any;
       const resp: Response = {} as any;
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const video = { filename: 'video.mp4' };
       const s3Response = {
         Body: Readable.from('video content'),
         ContentType: 'video/mp4',
       };
-      const getObjectCommandStub = sinon.stub().resolves(s3Response);
-      const s3Stub = { send: getObjectCommandStub } as unknown as S3;
+      // const getObjectCommandStub = sinon.stub().resolves(s3Response);
+      // const s3Stub = { send: getObjectCommandStub } as unknown as S3;
       sinon.stub(Video, 'findById').resolves(video);
 
       await DownloadController.downloadVideo(req, resp, next);
 
       expect(resp.status).to.equal(200);
-      expect(resp.headers['Content-Type']).to.equal(s3Response.ContentType);
-      expect(resp.headers['Content-Disposition']).to.equal(
+      expect(resp.getHeader('Content-Type')).to.equal(s3Response.ContentType);
+      expect(resp.getHeader('Content-Disposition')).to.equal(
         `attachment; filename=${video.filename}`,
       );
     });
@@ -35,7 +36,7 @@ describe('DownloadController', () => {
     it('should handle video not found', async () => {
       const req: Request = { params: { id: 'videoId' } } as any;
       const resp: Response = {} as any;
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       sinon.stub(Video, 'findById').resolves(null);
 
@@ -47,13 +48,13 @@ describe('DownloadController', () => {
     it('should handle failed video download', async () => {
       const req: Request = { params: { id: 'videoId' } } as any;
       const resp: Response = {} as any;
-      const next: NextFunction = sinon.stub();
+      const next = sinon.stub();
 
       const video = { filename: 'video.mp4' };
-      const getObjectCommandStub = sinon
-        .stub()
-        .throws(new Error('Download failed'));
-      const s3Stub = { send: getObjectCommandStub } as unknown as S3;
+      // const getObjectCommandStub = sinon
+      //   .stub()
+      //   .throws(new Error('Download failed'));
+      // const s3Stub = { send: getObjectCommandStub } as unknown as S3;
       sinon.stub(Video, 'findById').resolves(video);
 
       await DownloadController.downloadVideo(req, resp, next);

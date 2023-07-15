@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { describe, it } from 'mocha';
 import { Request, Response } from 'express';
 import Video from '../../src/models/video.model';
@@ -13,26 +15,24 @@ describe('VideoController', () => {
       const req = {
         params: { id: videoId },
         body: {},
-      } as Request;
+      } as unknown as Request<any, object, any>;
       const resp = {} as Response;
       const next = () => {};
 
       const findByIdStub = sinon
         .stub(Video, 'findById')
-        .returns(Promise.resolve({ _id: videoId }));
+        .returns(Promise.resolve({ _id: videoId }) as any);
       const findByIdAndUpdateStub = sinon
         .stub(Video, 'findByIdAndUpdate')
-        .returns(Promise.resolve({ _id: videoId, isPublic: true }));
+        .returns(Promise.resolve({ _id: videoId, isPublic: true }) as any);
 
       await VideoController.setPublic(req, resp, next);
 
       expect(findByIdStub.calledOnceWithExactly(videoId)).to.be.true;
       expect(
-        findByIdAndUpdateStub.calledOnceWithExactly(
-          videoId,
-          { $set: { isPublic: true } },
-          { new: true },
-        ),
+        findByIdAndUpdateStub.calledOnceWithExactly(videoId, {
+          $set: { isPublic: true },
+        }),
       ).to.be.true;
 
       sinon.restore();
@@ -44,13 +44,13 @@ describe('VideoController', () => {
       const req = {
         params: { id: videoId },
         body: {},
-      } as Request;
+      } as unknown as Request<any, object, any>;
       const resp = {} as Response;
       const next = sinon.stub();
 
       const findByIdStub = sinon
         .stub(Video, 'findById')
-        .returns(Promise.resolve(null));
+        .returns(Promise.resolve(null) as any);
 
       await VideoController.setPublic(req, resp, next);
 

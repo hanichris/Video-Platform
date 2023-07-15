@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { NextFunction, Request, Response } from 'express';
@@ -11,9 +12,10 @@ import AppController from '../../src/controllers/app.controller';
 
 describe('AppController', () => {
   describe('getStatus', () => {
-    it('should return status 200 and check if redis and db are alive', () => {
+    it('should return status 200 and check if redis and mongoose connections are alive', () => {
+      // Arrange
       const req = {} as Request;
-      const resp = {
+      const res = {
         status: sinon.stub().returnsThis(),
         json: sinon.stub(),
       } as unknown as Response;
@@ -22,11 +24,13 @@ describe('AppController', () => {
       const redisIsAliveStub = sinon.stub(redisClient, 'isAlive').returns(true);
       const dbIsAliveStub = sinon.stub(dbClient, 'isAlive').returns(true);
 
-      AppController.getStatus(req, resp, next);
+      // Act
+      AppController.getStatus(req, res, next);
 
-      expect(resp.status.calledWith(200)).to.be.true;
+      // Assert
+      expect(res.status.calledWith(200)).to.be.true;
       expect(
-        resp.json.calledWith({
+        res.json.calledWith({
           redis: true,
           db: true,
         }),
@@ -40,16 +44,19 @@ describe('AppController', () => {
     });
 
     it('should call next with an error if an exception occurs', () => {
+      // Arrange
       const req = {} as Request;
-      const resp = {} as Response;
+      const res = {} as Response;
       const next = sinon.stub() as unknown as NextFunction;
       const error = new Error('Some error message');
 
       sinon.stub(redisClient, 'isAlive').throws(error);
       sinon.stub(dbClient, 'isAlive').returns(true);
 
-      AppController.getStatus(req, resp, next);
+      // Act
+      AppController.getStatus(req, res, next);
 
+      // Assert
       expect(next.calledWith(error)).to.be.true;
 
       sinon.restore();
@@ -58,8 +65,9 @@ describe('AppController', () => {
 
   describe('getStats', () => {
     it('should return status 200 and the statistics', async () => {
+      // Arrange
       const req = {} as Request;
-      const resp = {
+      const res = {
         status: sinon.stub().returnsThis(),
         json: sinon.stub(),
       } as unknown as Response;
@@ -74,11 +82,13 @@ describe('AppController', () => {
         .stub(Comment, 'countDocuments')
         .resolves(15);
 
-      await AppController.getStats(req, resp, next);
+      // Act
+      await AppController.getStats(req, res, next);
 
-      expect(resp.status.calledWith(200)).to.be.true;
+      // Assert
+      expect(res.status.calledWith(200)).to.be.true;
       expect(
-        resp.json.calledWith({
+        res.json.calledWith({
           users: 10,
           videos: 20,
           comments: 15,
@@ -94,19 +104,19 @@ describe('AppController', () => {
       sinon.restore();
     });
 
-    it('should call next with an error if an exception occurs', async () => {
+    it('should handle errors', async () => {
+      // Arrange
       const req = {} as Request;
-      const resp = {} as Response;
+      const res = {} as Response;
       const next = sinon.stub() as unknown as NextFunction;
       const error = new Error('Some error message');
 
       sinon.stub(User, 'countDocuments').rejects(error);
-      sinon.stub(Video, 'countDocuments').resolves(20);
-      sinon.stub(Channel, 'countDocuments').resolves(5);
-      sinon.stub(Comment, 'countDocuments').resolves(15);
 
-      await AppController.getStats(req, resp, next);
+      // Act
+      await AppController.getStats(req, res, next);
 
+      // Assert
       expect(next.calledWith(error)).to.be.true;
 
       sinon.restore();

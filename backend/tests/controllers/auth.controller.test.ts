@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { Request, Response, NextFunction } from 'express';
@@ -35,13 +36,14 @@ describe('AuthController', () => {
       const saveUserStub = sinon.stub(User.prototype, 'save').resolves();
       const randomUUIDStub = sinon.stub().returns('randomUUID');
       sinon.replace(Channel.prototype, 'save', sinon.stub().resolves());
-      const jwtSignStub = sinon.stub(jwt, 'sign').returns('token');
+      const jwtSignStub = sinon.stub(jwt, 'sign');
+      // .returns('token');
 
       await AuthController.registerHandler(req, resp, next);
 
-      expect(resp.status.calledWith(201)).to.be.true;
+      expect((resp.status as sinon.SinonStub).calledWith(201)).to.be.true;
       expect(
-        resp.json.calledWith({
+        (resp.json as sinon.SinonStub).calledWith({
           status: 'success',
           data: {
             user: exclude(
@@ -56,7 +58,7 @@ describe('AuthController', () => {
         }),
       ).to.be.true;
       expect(
-        resp.cookie.calledWith('auth_token', 'token', {
+        (resp.cookie as sinon.SinonStub).calledWith('auth_token', 'token', {
           expires: sinon.match.instanceOf(Date),
           httpOnly: true,
         }),
@@ -91,9 +93,9 @@ describe('AuthController', () => {
 
       await AuthController.registerHandler(req, resp, next);
 
-      expect(resp.status.calledWith(409)).to.be.true;
+      expect((resp.status as sinon.SinonStub).calledWith(409)).to.be.true;
       expect(
-        resp.json.calledWith({
+        (resp.json as sinon.SinonStub).calledWith({
           status: 'fail',
           message: 'Email already exist',
         }),
@@ -124,7 +126,7 @@ describe('AuthController', () => {
 
       await AuthController.registerHandler(req, resp, next);
 
-      expect(next.calledWith(error)).to.be.true;
+      expect((next as sinon.SinonStub).calledWith(error)).to.be.true;
 
       expect(saveUserStub.calledOnce).to.be.true;
 
@@ -153,18 +155,19 @@ describe('AuthController', () => {
         // ...other user properties
       });
       const compareStub = sinon.stub(bcrypt, 'compare').resolves(true);
-      const jwtSignStub = sinon.stub(jwt, 'sign').returns('token');
+      const jwtSignStub = sinon.stub(jwt, 'sign');
+      // .returns('token');
 
       await AuthController.loginHandler(req, resp, next);
 
-      expect(resp.status.calledWith(200)).to.be.true;
+      expect((resp.status as sinon.SinonStub).calledWith(200)).to.be.true;
       expect(
-        resp.json.calledWith({
+        (resp.json as sinon.SinonStub).calledWith({
           status: 'success',
         }),
       ).to.be.true;
       expect(
-        resp.cookie.calledWith('auth_token', 'token', {
+        (resp.cookie as sinon.SinonStub).calledWith('auth_token', 'token', {
           expires: sinon.match.instanceOf(Date),
           httpOnly: true,
         }),

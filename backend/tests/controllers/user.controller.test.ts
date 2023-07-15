@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import sinon from 'sinon';
 import {
   describe, it, beforeEach, afterEach,
 } from 'mocha';
+import { Request, Response } from 'express';
 import UserController from '../../src/controllers/user.controller';
-import User from '../../src/models/user.model';
-import Video from '../../src/models/video.model';
-import { ChannelModel as Channel } from '../../src/models/channel.model';
-import createError from '../../src/error';
+// import User from '../../src/models/user.model';
+// import Video from '../../src/models/video.model';
+// import { ChannelModel as Channel } from '../../src/models/channel.model';
+// import createError from '../../src/error';
 
 describe('UserController', () => {
   beforeEach(() => {
@@ -26,21 +28,21 @@ describe('UserController', () => {
         name: 'John Doe',
         subscriptions: ['sub1', 'sub2'],
         history: ['video1', 'video2'],
-      };
-      const req = {};
+      } as unknown as Response;
+      const req = {} as unknown as Request<any, object, any>;
       const res = {
         status: sinon.stub().returnsThis(),
         json: sinon.stub(),
-      };
+      } as unknown as Response;
       const next = sinon.stub();
 
       sinon.stub(UserController, 'getMeHandler').resolves(user);
 
       await UserController.getMeHandler(req, res, next);
 
-      expect(res.status.calledWith(200)).to.be.true;
+      expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
       expect(
-        res.json.calledWith({
+        (res.json as sinon.SinonStub).calledWith({
           status: 'success',
           data: {
             user: {
@@ -55,19 +57,19 @@ describe('UserController', () => {
 
     it('should call next with the error if an error occurs', async () => {
       const error = new Error('Internal Server Error');
-      const req = {};
+      const req = {} as unknown as Request<any, object, any>;
       const res = {
         status: sinon.stub(),
         json: sinon.stub(),
-      };
+      } as unknown as Response;
       const next = sinon.stub();
 
       sinon.stub(UserController, 'getMeHandler').rejects(error);
 
       await UserController.getMeHandler(req, res, next);
 
-      expect(res.status.notCalled).to.be.true;
-      expect(res.json.notCalled).to.be.true;
+      expect((res.status as sinon.SinonStub).notCalled).to.be.true;
+      expect((res.json as sinon.SinonStub).notCalled).to.be.true;
       expect(next.calledWith(error)).to.be.true;
     });
   });
