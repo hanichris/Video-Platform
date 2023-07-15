@@ -20,10 +20,10 @@ function SubscriptionsPage() {
   useEffect(() => {
     const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
     const fetchVideos = async () => {
-      await axios.get(
-        `${SERVER_ENDPOINT}/users/${user?._id}/subscriptions`,
-        { withCredentials: true },
-      )
+      await axios
+        .get(`${SERVER_ENDPOINT}/users/${user?._id}/subscriptions`, {
+          withCredentials: true,
+        })
         .then((data) => {
           setChannels(data.data);
         });

@@ -25,12 +25,13 @@ function ProfilePage() {
   const fetchUser = async () => {
     try {
       store.setRequestLoading(true);
-      await axios.get(`${SERVER_ENDPOINT}/users/me`, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      await axios
+        .get(`${SERVER_ENDPOINT}/users/me`, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
         .then((data) => {
           if (data.status !== 200) {
             throw new Error(data.statusText);
@@ -150,16 +151,16 @@ function ProfilePage() {
                 <p className="mb-3">
                   Subscriptions:
                   {' '}
-                  {user?.subscriptions.length}
+                  {user?.subscriptions?.length}
                 </p>
                 <p className="mb-3">
                   Channels:
-                  {user.channels.length}
+                  {user.channels?.length}
                 </p>
                 <p className="mb-3">
                   Default Channel:
                   {' '}
-                  {user.channels.length > 0
+                  {user.channels?.length > 0
                     ? (user.channels[0] as unknown as IChannel)._id
                     : ''}
                 </p>

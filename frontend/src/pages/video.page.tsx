@@ -126,29 +126,26 @@ function VideoPage() {
   const currentVideo = useStore((state) => state.currentVideo);
   const authUser = useStore((state) => state.authUser);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const videoRes = await axios.get(
-          `${SERVER_ENDPOINT}/videos/${id}/view`,
-        )
-          .then((data: any) => {
-            store.setCurrentVideo(data.data);
-            return data.data;
-          });
+  const fetchData = async () => {
+    try {
+      // Fetch video data
+      const videoResponse = await axios.get(`${SERVER_ENDPOINT}/videos/${id}/view`);
+      const videoData = videoResponse.data;
+      store.setCurrentVideo(videoData);
+      
+      // Fetch channel data
+      const channelResponse = await axios.get(`${SERVER_ENDPOINT}/channels/${videoData.channelId}/view`);
+      const channelData = channelResponse.data;
+      store.setCurrentChannel(channelData);
 
-        await axios.get(
-          `${SERVER_ENDPOINT}/channels/${videoRes.channelId}/view`,
-        )
-          .then((data: any) => {
-            store.setCurrentChannel(data.data);
-            return data.data;
-          });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
-  }, []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchData();
+}, [id]);
+
 
   const handleLike = async () => {
     try {
@@ -357,12 +354,9 @@ function VideoPage() {
             <ChannelDetail>
               <ChannelName>{currentChannel?.name}</ChannelName>
               <ChannelCounter>
-                {
-                  currentChannel?.subscribers
-                  && currentChannel?.subscribers > 0
-                    ? currentChannel?.subscribers
-                    : 0
-                }
+                {currentChannel?.subscribers && currentChannel?.subscribers > 0
+                  ? currentChannel?.subscribers
+                  : 0}
                 {' '}
                 subscribers
               </ChannelCounter>
@@ -378,11 +372,9 @@ function VideoPage() {
         <Hr />
         <Comments videoId={id} />
       </Content>
-      {
-        currentVideo?.tags
-          ? <Recommendation tags={Array.from(currentVideo?.tags)} />
-          : null
-      }
+      {currentVideo?.tags ? (
+        <Recommendation tags={Array.from(currentVideo?.tags)} />
+      ) : null}
     </Container>
   );
 }

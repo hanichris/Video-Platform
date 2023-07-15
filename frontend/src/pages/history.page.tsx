@@ -20,10 +20,10 @@ function HistoryPage() {
   useEffect(() => {
     const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
     const fetchVideos = async () => {
-      await axios.get(
-        `${SERVER_ENDPOINT}/users/${user?._id}/history`,
-        { withCredentials: true },
-      )
+      await axios
+        .get(`${SERVER_ENDPOINT}/users/${user?._id}/history`, {
+          withCredentials: true,
+        })
         .then((data) => {
           setVideos(data.data);
         });
