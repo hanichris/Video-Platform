@@ -42,6 +42,7 @@ module.exports = {
     semi: [2, 'always'],
     'no-underscore-dangle': 'off',
     '@typescript-eslint/no-explicit-any': ['off'],
+    '@typescript-eslint/no-unused-expressions': ['off'],
     'import/extensions': [
       2,
       'ignorePackages',

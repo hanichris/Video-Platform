@@ -17,7 +17,8 @@
     "start-worker": "nodemon --exec babel-node --presets @babel/preset-typescript ./dist/worker.js",
     "start": "concurrently \"npm run start-*\"",
     "build": "tsc --incremental",
-    "test": "mocha --require @babel/register --exit"
+    "test": "mocha --recursive --require ts-node/register --exit 'tests/**/*.ts'",
+    "full-test": "npm run fmt && npm run semifix && npm run lint && npm run build && npm run test"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",
@@ -36,7 +37,10 @@
     "@types/mocha": "^10.0.1",
     "@types/multer": "^1.4.7",
     "@types/node": "^18.11.18",
+    "@types/nodemon": "^1.19.2",
+    "@types/original-url": "^1.2.0",
     "@types/qs": "^6.9.7",
+    "@types/redis": "^4.0.11",
     "@types/sinon": "^10.0.15",
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
@@ -82,6 +86,7 @@
     "mongoose": "^7.0.3",
     "multer": "^1.4.5-lts.1",
     "node-mocks-http": "^1.12.2",
+    "original-url": "^1.2.3",
     "qs": "^6.11.0",
     "redis": "^4.6.5",
     "uuid": "^9.0.0",
