@@ -40,7 +40,13 @@ const Text = styled.span`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-function Comment({ videoId, comment }: { videoId: string | undefined; comment: IComment }) {
+function Comment({
+  videoId,
+  comment,
+}: {
+  videoId: string | undefined;
+  comment: IComment;
+}) {
   const store = useStore();
   const user = store.authUser;
 
