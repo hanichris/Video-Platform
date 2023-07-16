@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import { ChannelSchema } from './channel.model';
 
 // User model
@@ -35,8 +35,8 @@ const UserSchema = new mongoose.Schema(
       type: [ChannelSchema],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const UserModel = mongoose.model("User", UserSchema);
+const UserModel = mongoose.model('User', UserSchema);
 export default UserModel;

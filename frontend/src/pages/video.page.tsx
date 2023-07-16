@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
+import { useEffect } from 'react';
+import styled from 'styled-components';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
-import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
-import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import Comments from "../components/Comments";
-import Card from "../components/VideoCard";
-import { useLocation, useParams } from "react-router-dom";
-import axios from "axios";
-import { format } from "timeago.js";
-import Recommendation from "../components/Recommendation";
-import { IChannel, IUser, IVideo } from "../utils/types";
-import useStore from "../store";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { format } from 'timeago.js';
+import { toast } from 'react-toastify';
+import Recommendation from '../components/Recommendation';
+import useStore from '../store';
+import Comments from '../components/Comments';
 
 const Container = styled.div`
   padding: 2em;
@@ -115,152 +111,131 @@ const Subscribe = styled.button`
 `;
 
 const VideoFrame = styled.video`
-  max-height: 720px;
+  max-height: 420px;
   width: 100%;
   object-fit: cover;
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const VideoPage = () => {
+function VideoPage() {
   const store = useStore();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [currentChannel, setChannel] = useState<IChannel>({
-    _id: "",
-    name: "",
-    description: "",
-    imgUrl: "",
-    views: 0,
-    tags: [],
-    likes: [],
-    dislikes: [],
-    videos: [],
-    subscribers: 0,
-    isPublic: false,
-    createdAt: ""
-  });
-  const [currentUser, setUser] = useState<IUser>({
-    _id: "",
-  username: "",
-  email: "",
-  avatar: "",
-  subscriptions: [],
-  history: [],
-  channels: [],
-  fromGoogle: false,
-  });
-  const [currentVideo, setVideo] = useState<IVideo>({
-    _id: "",
-  userId: "",
-  channelId: "",
-  title: "",
-  description: "",
-  imgUrl: "",
-  videoUrl: "",
-  views: 0,
-  tags: [],
-  likes: [],
-  dislikes: [],
-  isPublic: false,
-  createdAt: "",
-  });
-
+  const currentChannel = useStore((state) => state.currentChannel);
+  const currentVideo = useStore((state) => state.currentVideo);
+  const authUser = useStore((state) => state.authUser);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const videoRes = await axios.get(`${SERVER_ENDPOINT}/videos/${id}/view`);
-        const channelRes = await axios.get(
-          `${SERVER_ENDPOINT}/channels/${videoRes.data.channelId}/view`
-        );
-        const userRes = await axios.get(
-          `${SERVER_ENDPOINT}/users/${channelRes.data.userId}`,
-          {withCredentials: true}
-        );
-        setUser(userRes.data)
-        setChannel(channelRes.data);
-        setVideo(videoRes.data)
-        store.setAuthUser(userRes.data);
-        store.setCurrentVideo(videoRes.data);
-        store.setCurrentChannel(channelRes.data);
-      } catch (err) {}
-    };
-    //fetchData();
-  }, [currentVideo]);
+  const fetchData = async () => {
+    try {
+      // Fetch video data
+      const videoResponse = await axios.get(`${SERVER_ENDPOINT}/videos/${id}/view`);
+      const videoData = videoResponse.data;
+      store.setCurrentVideo(videoData);
+      
+      // Fetch channel data
+      const channelResponse = await axios.get(`${SERVER_ENDPOINT}/channels/${videoData.channelId}/view`);
+      const channelData = channelResponse.data;
+      store.setCurrentChannel(channelData);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchData();
+}, [id]);
+
 
   const handleLike = async () => {
     try {
-      await axios.put(`${SERVER_ENDPOINT}/users/like/${id}`, 
-      {}, {
-        withCredentials: true,
-      });
+      await axios.put(
+        `${SERVER_ENDPOINT}/users/like/${id}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
-      if (error?.message === "You are not logged in") {
-        navigate("/login");
+      if (error?.message === 'You are not logged in') {
+        navigate('/login');
       }
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
   const handleDislike = async () => {
     try {
-      await axios.put(`${SERVER_ENDPOINT}/users/dislike/${id}`,
-      {}, {
-        withCredentials: true,
-      });
+      await axios.put(
+        `${SERVER_ENDPOINT}/users/dislike/${id}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
-      if (error?.message === "You are not logged in") {
-        navigate("/login");
+      if (error?.message === 'You are not logged in') {
+        navigate('/login');
       }
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
 
   const handleSub = async () => {
     try {
-      currentUser.subscriptions.includes(currentChannel?._id)
-      ? await axios.put(`${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel?._id}`, {}, {
-        withCredentials: true,
-      })
-      : await axios.put(`${SERVER_ENDPOINT}/users/subscribe/${currentChannel?._id}`, {}, {
-        withCredentials: true,
-      });
+      if (!currentChannel || !currentChannel._id) {
+        throw new Error('Channel not found!');
+      }
+      if (authUser?.subscriptions.includes(currentChannel._id)) {
+        await axios.put(
+          `${SERVER_ENDPOINT}/users/unsubscribe/${currentChannel._id}`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+      } else {
+        await axios.put(
+          `${SERVER_ENDPOINT}/users/subscribe/${currentChannel._id}`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+      }
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
-      if (error?.message === "You are not logged in") {
-        navigate("/login");
+      if (error?.message === 'You are not logged in') {
+        navigate('/login');
       }
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -268,21 +243,29 @@ const VideoPage = () => {
   const handlePlay = async () => {
     try {
       await axios.put(`${SERVER_ENDPOINT}/videos/${id}/view`);
+      if (authUser) {
+        await axios.put(
+          `${SERVER_ENDPOINT}/users/history/${id}`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+      }
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
-  
+
   const handleDownload = async () => {
     try {
       axios({
@@ -299,85 +282,101 @@ const VideoPage = () => {
         document.body.removeChild(link);
       });
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
 
   // TODO share functionality
-  const handleShare = async () => {}
-
+  const handleShare = async () => {};
+  // console.log(store.authUser);
   return (
     <Container>
       <Content>
         <VideoWrapper>
           <VideoFrame
-          onPlay={handlePlay}
-          src={`${SERVER_ENDPOINT}/videos/${id}/stream`} controls/>
+            onPlay={handlePlay}
+            src={`${SERVER_ENDPOINT}/videos/${id}/stream`}
+            controls
+          />
         </VideoWrapper>
-        <Title>{currentVideo.title}</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
           <Info>
-            {currentVideo.views} views • {format(currentVideo.createdAt)}
+            {currentVideo?.views}
+            {' '}
+            views •
+            {format(String(currentVideo?.createdAt))}
           </Info>
           <Buttons>
             <Button onClick={handleLike}>
-              {currentVideo.likes?.includes(currentUser?._id) ? (
+              {currentVideo?.likes?.includes(String(authUser?._id)) ? (
                 <ThumbUpIcon />
               ) : (
                 <ThumbUpOutlinedIcon />
-              )}{" "}
-              {currentVideo.likes?.length}
+              )}
+              {' '}
+              {currentVideo?.likes?.length}
             </Button>
             <Button onClick={handleDislike}>
-              {currentVideo.dislikes?.includes(currentUser?._id) ? (
+              {currentVideo?.dislikes?.includes(String(authUser?._id)) ? (
                 <ThumbDownIcon />
               ) : (
                 <ThumbDownOffAltOutlinedIcon />
-              )}{" "}
+              )}
+              {' '}
               Dislike
             </Button>
             <Button onClick={handleShare}>
-              <ReplyOutlinedIcon /> Share
+              <ReplyOutlinedIcon />
+              {' '}
+              Share
             </Button>
             <Button onClick={handleDownload}>
-              <DownloadForOfflineOutlinedIcon /> Download
+              <DownloadForOfflineOutlinedIcon />
+              {' '}
+              Download
             </Button>
           </Buttons>
         </Details>
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src={currentChannel.imgUrl} />
+            <Image src={currentChannel?.imgUrl} />
             <ChannelDetail>
-              <ChannelName>{currentChannel.name}</ChannelName>
+              <ChannelName>{currentChannel?.name}</ChannelName>
               <ChannelCounter>
-                {currentChannel.subscribers > 0 ? currentChannel.subscribers : 0} subscribers
+                {currentChannel?.subscribers && currentChannel?.subscribers > 0
+                  ? currentChannel?.subscribers
+                  : 0}
+                {' '}
+                subscribers
               </ChannelCounter>
-              <Description>{currentVideo.description}</Description>
+              <Description>{currentVideo?.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
           <Subscribe onClick={handleSub}>
-            {currentUser.subscriptions?.includes(currentChannel._id)
-              ? "UNSUBSCRIBE"
-              : "SUBSCRIBE"}
+            {authUser?.subscriptions?.includes(String(currentChannel?._id))
+              ? 'UNSUBSCRIBE'
+              : 'SUBSCRIBE'}
           </Subscribe>
         </Channel>
         <Hr />
-        <Comments videoId={currentVideo._id} />
+        <Comments videoId={id} />
       </Content>
-      <Recommendation tags={currentVideo.tags} />
+      {currentVideo?.tags ? (
+        <Recommendation tags={Array.from(currentVideo?.tags)} />
+      ) : null}
     </Container>
   );
-};
+}
 
 export default VideoPage;

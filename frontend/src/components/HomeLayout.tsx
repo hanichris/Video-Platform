@@ -1,30 +1,30 @@
-import { Outlet } from "react-router-dom";
-import Header from "./Header";
-import SideBar from "./Sidebar";
-import styled from "styled-components";
+import { Outlet } from 'react-router-dom';
+import styled from 'styled-components';
+import Header from './Header';
+import SideBar from './Sidebar';
 
 const SideContainer = styled.aside`
-  float:left;
-  width:20%;
+  float: left;
+  width: 15%;
 `;
 
 const MainContainer = styled.div`
-  float:right;
-  width: 80%;
+  float: right;
+  width: 85%;
 `;
 
-const HomeLayout = () => {
+function HomeLayout() {
   return (
     <>
       <Header />
       <SideContainer>
-        <SideBar darkMode={"Light"} setDarkMode={(mode: any) => !mode}/>
+        <SideBar />
       </SideContainer>
       <MainContainer>
-        <Outlet/>
+        <Outlet />
       </MainContainer>
     </>
   );
-};
+}
 
 export default HomeLayout;

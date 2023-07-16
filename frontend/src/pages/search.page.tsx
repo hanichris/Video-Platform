@@ -1,10 +1,10 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import styled from "styled-components";
-import VideoCard from "../components/VideoCard";
-import { IVideo } from "../utils/types";
-import SearchBar from "../components/SearchBar"
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import VideoCard from '../components/VideoCard';
+import { IVideo } from '../utils/types';
+import SearchBar from '../components/SearchBar';
 
 const Container = styled.div`
   display: flex;
@@ -13,10 +13,12 @@ const Container = styled.div`
 `;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
-const SearchPage = () => {
+function SearchPage() {
   const [videos, setVideos] = useState<Array<IVideo>>([]);
   const query = useLocation().search;
-  const searchQuery = query.toString().includes("q") ? `search${query}` : `tags${query}`;
+  const searchQuery = query.toString().includes('q')
+    ? `search${query}`
+    : `tags${query}`;
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -30,12 +32,12 @@ const SearchPage = () => {
     <>
       <SearchBar />
       <Container>
-      {videos.map(video=>(
-        <VideoCard key={video._id} type={null} video={video}/>
-      ))}
-    </Container>
+        {videos.map((video) => (
+          <VideoCard key={video._id} video={video} />
+        ))}
+      </Container>
     </>
-  )
-};
+  );
+}
 
 export default SearchPage;

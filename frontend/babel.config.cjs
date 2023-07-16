@@ -4,9 +4,9 @@ module.exports = {
       '@babel/preset-typescript',
       {
         targets: {
-          node: 'current'
-        }
-      }
-    ]
-  ]
+          node: 'current',
+        },
+      },
+    ],
+  ],
 };

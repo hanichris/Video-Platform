@@ -1,79 +1,79 @@
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import useStore from "../store";
-import { object, string, TypeOf } from "zod";
-import { useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getGoogleUrl } from "../utils/getGoogleUrl";
-import GoogleLogo from "../assets/google.svg";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { object, string, TypeOf } from 'zod';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import getGoogleUrl from '../utils/getGoogleUrl';
+import GoogleLogo from '../assets/google.svg';
+import useStore from '../store';
 
 const registerUserModel = object({
-  username: string().min(1, "Full name is required").max(100),
+  username: string().min(1, 'Full name is required').max(100),
   email: string()
-    .min(1, "Email address is required")
-    .email("Email Address is invalid"),
+    .min(1, 'Email address is required')
+    .email('Email Address is invalid'),
   password: string()
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
-  passwordConfirm: string().min(1, "Please confirm your password"),
+    .min(1, 'Password is required')
+    .min(8, 'Password must be more than 8 characters')
+    .max(32, 'Password must be less than 32 characters'),
+  passwordConfirm: string().min(1, 'Please confirm your password'),
 }).refine((data) => data.password === data.passwordConfirm, {
-  path: ["passwordConfirm"],
-  message: "Passwords do not match",
+  path: ['passwordConfirm'],
+  message: 'Passwords do not match',
 });
 
 export type RegisterInput = TypeOf<typeof registerUserModel>;
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const RegisterPage = () => {
+function RegisterPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const store = useStore();
-  const from = "/profile";
+  const from = ((location.state as any)?.from?.pathname as string) || '/profile';
 
   const registerUser = async (data: RegisterInput) => {
     try {
       store.setRequestLoading(true);
-      const response = await fetch(
+      const response = await axios.post(
         `${SERVER_ENDPOINT}/auth/register`,
+        JSON.stringify(data),
         {
-          method: "POST",
-          credentials: "include",
-          body: JSON.stringify(data),
+          withCredentials: true,
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        }
+        },
       );
-      if (!response.ok) {
-        throw await response.json();
+      console.log(response.status);
+      if (response.status !== 201) {
+        throw new Error(response.statusText);
       }
 
-      toast.success("Account created successfully", {
-        position: "top-right",
+      toast.success('Account created successfully', {
+        position: 'top-right',
       });
       store.setRequestLoading(false);
-      navigate("/profile");
+      navigate('/profile');
     } catch (error: any) {
       store.setRequestLoading(false);
       if (error.error) {
         error.error.forEach((err: any) => {
           toast.error(err.message, {
-            position: "top-right",
+            position: 'top-right',
           });
         });
         return;
       }
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -83,18 +83,10 @@ const RegisterPage = () => {
   });
 
   const {
-    reset,
     handleSubmit,
     register,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = methods;
-
-  useEffect(() => {
-    // if (isSubmitSuccessful) {
-    //   reset();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubmitSuccessful]);
 
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
     registerUser(values);
@@ -110,7 +102,7 @@ const RegisterPage = () => {
                 type="text"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Username"
-                {...register("username")}
+                {...register('username')}
               />
               {errors.username && (
                 <p className="text-red-700 text-sm mt-1">
@@ -123,7 +115,7 @@ const RegisterPage = () => {
                 type="email"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Email address"
-                {...register("email")}
+                {...register('email')}
               />
               {errors.email && (
                 <p className="text-red-700 text-sm mt-1">
@@ -137,7 +129,7 @@ const RegisterPage = () => {
                 type="password"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Password"
-                {...register("password")}
+                {...register('password')}
               />
               {errors.password && (
                 <p className="text-red-700 text-sm mt-1">
@@ -151,7 +143,7 @@ const RegisterPage = () => {
                 type="password"
                 className="form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Confirm Password"
-                {...register("passwordConfirm")}
+                {...register('passwordConfirm')}
               />
               {errors.passwordConfirm && (
                 <p className="text-red-700 text-sm mt-1">
@@ -175,7 +167,7 @@ const RegisterPage = () => {
 
             <a
               className="px-7 py-2 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full flex justify-center items-center mb-3"
-              style={{ backgroundColor: "#3b5998" }}
+              style={{ backgroundColor: '#3b5998' }}
               href={getGoogleUrl(from)}
               role="button"
               data-mdb-ripple="true"
@@ -185,7 +177,7 @@ const RegisterPage = () => {
                 className="pr-2"
                 src={GoogleLogo}
                 alt=""
-                style={{ height: "2rem" }}
+                style={{ height: '2rem' }}
               />
               Register with Google
             </a>
@@ -194,6 +186,6 @@ const RegisterPage = () => {
       </div>
     </section>
   );
-};
+}
 
 export default RegisterPage;

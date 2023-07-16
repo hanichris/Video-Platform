@@ -1,28 +1,29 @@
-import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { exclude } from "../controllers/AuthController";
-import User from '../models/user.model'
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { exclude } from '../controllers/auth.controller';
+import User from '../models/user.model';
 
 // Get token from request header or from cookie to authenticate user
-export const getAuthToken = async (
+const getAuthToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     let token;
     if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
+      req.headers.authorization
+      && req.headers.authorization.startsWith('Bearer')
     ) {
-      token = req.headers.authorization.split(" ")[1];
+      /* eslint prefer-destructuring: ["error", {AssignmentExpression: {array: false}}] */
+      token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies.auth_token) {
       token = req.cookies.auth_token;
     }
 
     if (!token) {
       return res.status(401).json({
-        message: "You are not logged in",
+        message: 'You are not logged in',
       });
     }
 
@@ -38,14 +39,16 @@ export const getAuthToken = async (
 
     if (!user) {
       return res.status(401).json({
-        status: "fail",
-        message: "User with that token no longer exist",
+        status: 'fail',
+        message: 'User with that token no longer exist',
       });
     }
 
-    res.locals.user = exclude(user, ["password", "history", "subscriptions"]);
-    next();
+    res.locals.user = exclude(user._doc, ['password']);
+    return next();
   } catch (err: any) {
-    next(err);
+    return next(err);
   }
 };
+
+export default getAuthToken;

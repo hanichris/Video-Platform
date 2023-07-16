@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import VideoCard from "../components/VideoCard";
-import axios from "axios";
-import {IVideo} from "../utils/types"
-import SearchBar from "../components/SearchBar"
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import VideoCard from '../components/VideoCard';
+import { IVideo } from '../utils/types';
+import SearchBar from '../components/SearchBar';
 
 const Container = styled.div`
-  padding: 2em;
+  padding: 0.5em;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
 `;
 
-const HomePage = () => {
+function HomePage() {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
@@ -29,11 +29,11 @@ const HomePage = () => {
       <SearchBar />
       <Container>
         {videos.map((video: IVideo) => (
-          <VideoCard key={video._id} type={null} video={video}/>
+          <VideoCard key={video._id} video={video} />
         ))}
       </Container>
     </>
   );
-};
+}
 
 export default HomePage;

@@ -1,12 +1,10 @@
-import PropTypes from "prop-types"
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 import Comment from './Comment';
-import { IChannel, IUser, IVideo, IComment } from "../utils/types";
-import { useNavigate } from "react-router-dom";
-import useStore from "../store";
-import { toast } from "react-toastify";
+import { IComment } from '../utils/types';
+import useStore from '../store';
 
 const Container = styled.div``;
 
@@ -43,59 +41,45 @@ const Button = styled.button`
 
 const SERVER_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 
-const Comments = ( {videoId}: {videoId: string} ) => {
-  const navigate = useNavigate();
+function Comments({ videoId }: { videoId: string | undefined }) {
   const store = useStore();
   const [newcomment, setNewComment] = useState<string>();
   const [comments, setComments] = useState<Array<IComment>>([]);
-  // const [currentUser, setUser] = useState<IUser>({
-  //   _id: "",
-  // username: "",
-  // email: "",
-  // avatar: "",
-  // subscriptions: [],
-  // history: [],
-  // channels: [],
-  // fromGoogle: false,
-  // });
   const currentUser = store.authUser;
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const commentRes = await axios.get(`${SERVER_ENDPOINT}/comments/${videoId}`);
+        const commentRes = await axios.get(
+          `${SERVER_ENDPOINT}/comments/${videoId}`,
+        );
         setComments(commentRes.data);
-        // const userRes = await axios.get(
-        //   `${SERVER_ENDPOINT}/users/${commentRes.data.userId}`
-        // );
-        // setUser(userRes.data)
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchComments();
   }, [videoId]);
 
   const handleAddComment = async () => {
     try {
-      await axios.post(`${SERVER_ENDPOINT}/comments/${videoId}`, 
-      {description: newcomment},
-      {
-        withCredentials: true,
-      });
+      await axios.post(
+        `${SERVER_ENDPOINT}/comments/${videoId}`,
+        { description: newcomment },
+        {
+          withCredentials: true,
+        },
+      );
     } catch (error: any) {
-      console.log(error?.message)
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      if (error?.message === "You are not logged in") {
-        navigate("/login");
-      }
+      console.log(error?.message);
+      const resMessage = (error.response
+          && error.response.data
+          && error.response.data.message)
+        || error.message
+        || error.toString();
 
       toast.error(resMessage, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };
@@ -104,23 +88,17 @@ const Comments = ( {videoId}: {videoId: string} ) => {
     <Container>
       <NewComment>
         <Avatar src={currentUser?.avatar} />
-        <Input 
+        <Input
           placeholder="Add a comment..."
           onChange={(e) => setNewComment(e.target.value)}
         />
-        <Button onClick={handleAddComment}>
-          Add
-        </Button>
+        <Button onClick={handleAddComment}>Add</Button>
       </NewComment>
       {comments.map((comment) => (
-        <Comment key={comment._id} videoId={videoId} comment={comment}/>
+        <Comment key={comment._id} videoId={videoId} comment={comment} />
       ))}
     </Container>
   );
-};
-
-Comments.propTypes = {
-  videoId: PropTypes.string
 }
 
 export default Comments;
